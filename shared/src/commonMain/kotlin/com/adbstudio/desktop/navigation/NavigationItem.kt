@@ -5,6 +5,7 @@ enum class NavigationItem(
     val category: String = "Navigation",
 ) {
     Apps("Apps"),
+    DebugInfo("Debug Info"),
     Settings("Settings"),
     UiInspector("UI Inspector"),
 }

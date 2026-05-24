@@ -6,6 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.MenuBarScope
 import androidx.compose.ui.window.Window
@@ -16,30 +20,36 @@ import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
+import kotlin.time.TimeSource
 
 fun main() = application {
     val adbManager = remember { AdbManager() }
+    var commanderOpen by remember { mutableStateOf(false) }
+    var lastShiftTime by remember { mutableStateOf(TimeSource.Monotonic.markNow()) }
+    val doubleShiftThresholdMs = 400.0
 
     Window(
         onCloseRequest = ::exitApplication,
         title = "ADBStudio",
+        onPreviewKeyEvent = { event ->
+            if (event.type == KeyEventType.KeyUp &&
+                (event.key == Key.ShiftLeft || event.key == Key.ShiftRight)
+            ) {
+                val now = TimeSource.Monotonic.markNow()
+                val elapsed = (now - lastShiftTime).inWholeMilliseconds
+                lastShiftTime = now
+                if (elapsed < doubleShiftThresholdMs) {
+                    commanderOpen = !commanderOpen
+                }
+                true
+            } else {
+                false
+            }
+        },
     ) {
         var themeMode by remember { mutableStateOf(ThemeMode.System) }
         var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
         val commanderRegistry = remember { CommanderRegistry() }
-
-        MenuBar {
-            NavigationMenu(
-                current = navigationItem,
-                onSelect = { navigationItem = it },
-            )
-            ThemeMenu(
-                current = themeMode,
-                onSelect = { themeMode = it },
-            )
-            DeviceMenu()
-            HelpMenu()
-        }
 
         LaunchedEffect(Unit) {
             NavigationItem.entries.forEach { item ->
@@ -73,7 +83,28 @@ fun main() = application {
             )
         }
 
-        CommanderHost(registry = commanderRegistry) {
+        MenuBar {
+            NavigationMenu(
+                current = navigationItem,
+                onSelect = { navigationItem = it },
+            )
+            ThemeMenu(
+                current = themeMode,
+                onSelect = { themeMode = it },
+            )
+            DeviceMenu()
+            HelpMenu()
+        }
+
+        CommanderHost(
+            isOpen = commanderOpen,
+            onDismiss = { commanderOpen = false },
+            onActionSelected = { action ->
+                action.action()
+                commanderOpen = false
+            },
+            registry = commanderRegistry,
+        ) {
             App(
                 themeMode = themeMode,
                 navigationItem = navigationItem,
@@ -90,6 +121,7 @@ private fun MenuBarScope.NavigationMenu(
 ) {
     Menu("Navigation") {
         Item("Apps") { onSelect(NavigationItem.Apps) }
+        Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }
         Item("UI Inspector") { onSelect(NavigationItem.UiInspector) }
     }
