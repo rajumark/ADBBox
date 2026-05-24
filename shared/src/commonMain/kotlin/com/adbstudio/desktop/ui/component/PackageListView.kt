@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,7 +65,31 @@ fun PackageListView(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .onPreviewKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown) {
+                    when (event.key) {
+                        Key.DirectionDown -> {
+                            if (filtered.isNotEmpty()) {
+                                focusedIndex = if (focusedIndex < filtered.lastIndex) focusedIndex + 1 else 0
+                                onPackageSelected(filtered[focusedIndex])
+                            }
+                            true
+                        }
+                        Key.DirectionUp -> {
+                            if (filtered.isNotEmpty()) {
+                                focusedIndex = if (focusedIndex > 0) focusedIndex - 1 else filtered.lastIndex
+                                onPackageSelected(filtered[focusedIndex])
+                            }
+                            true
+                        }
+                        else -> false
+                    }
+                } else false
+            },
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,28 +129,7 @@ fun PackageListView(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .onKeyEvent { event ->
-                    if (event.type == KeyEventType.KeyUp) {
-                        when (event.key) {
-                            Key.DirectionDown -> {
-                                if (filtered.isNotEmpty()) {
-                                    focusedIndex = if (focusedIndex < filtered.lastIndex) focusedIndex + 1 else 0
-                                    onPackageSelected(filtered[focusedIndex])
-                                }
-                                true
-                            }
-                            Key.DirectionUp -> {
-                                if (filtered.isNotEmpty()) {
-                                    focusedIndex = if (focusedIndex > 0) focusedIndex - 1 else filtered.lastIndex
-                                    onPackageSelected(filtered[focusedIndex])
-                                }
-                                true
-                            }
-                            else -> false
-                        }
-                    } else false
-                },
+                .padding(horizontal = 12.dp),
         ) {
             LazyColumn(
                 state = listState,
