@@ -127,6 +127,14 @@ fun CommanderDialog(
             tonalElevation = 4.dp,
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Search Anything (Double Shift)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 TextField(
                     value = query,
                     onValueChange = {
@@ -220,31 +228,35 @@ private fun CommanderActionItem(
         modifier = modifier
             .background(backgroundColor, shape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Text(
+            text = action.category,
+            style = MaterialTheme.typography.labelSmall,
+            color = contentColor.copy(alpha = 0.5f),
+            modifier = Modifier.width(80.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = action.label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = contentColor,
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        if (action.shortcutHint.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = action.label,
-                style = MaterialTheme.typography.bodyLarge,
-                color = contentColor,
+                text = action.shortcutHint,
+                style = MaterialTheme.typography.labelSmall,
+                color = contentColor.copy(alpha = 0.4f),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = action.category,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = contentColor.copy(alpha = 0.5f),
-                )
-                if (action.shortcutHint.isNotEmpty()) {
-                    Text(
-                        text = "  ·  ${action.shortcutHint}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = contentColor.copy(alpha = 0.4f),
-                    )
-                }
-            }
         }
     }
 }

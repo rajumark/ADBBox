@@ -21,12 +21,20 @@ import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceManager
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
+import com.adbstudio.desktop.util.Preferences
 import kotlin.time.TimeSource
 import kotlinx.coroutines.delay
 
 fun main() = application {
     val adbManager = remember { AdbManager() }
+    val prefs = remember { Preferences(adbManager.appDataDir) }
     val deviceManager = remember { DeviceManager(adbManager.adbPath) }
+    val initialScreen = remember {
+        NavigationItem.entries.find { it.name == prefs.lastScreen } ?: NavigationItem.Apps
+    }
+    val initialTheme = remember {
+        try { ThemeMode.valueOf(prefs.themeMode) } catch (_: Exception) { ThemeMode.System }
+    }
     var commanderOpen by remember { mutableStateOf(false) }
     var lastShiftTime by remember { mutableStateOf(TimeSource.Monotonic.markNow()) }
     val doubleShiftThresholdMs = 400.0
@@ -57,9 +65,17 @@ fun main() = application {
             }
         },
     ) {
-        var themeMode by remember { mutableStateOf(ThemeMode.System) }
-        var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
+        var themeMode by remember { mutableStateOf(initialTheme) }
+        var navigationItem by remember (initialScreen) { mutableStateOf(initialScreen) }
         val commanderRegistry = remember { CommanderRegistry() }
+
+        LaunchedEffect(navigationItem) {
+            prefs.lastScreen = navigationItem.name
+        }
+
+        LaunchedEffect(themeMode) {
+            prefs.themeMode = themeMode.name
+        }
 
         LaunchedEffect(Unit) {
             NavigationItem.entries.forEach { item ->
@@ -106,20 +122,19 @@ fun main() = application {
             HelpMenu()
         }
 
-        CommanderHost(
-            isOpen = commanderOpen,
-            onDismiss = { commanderOpen = false },
-            onActionSelected = { action ->
-                action.action()
-                commanderOpen = false
-            },
-            registry = commanderRegistry,
-        ) {
+        CommanderHost(registry = commanderRegistry) {
             App(
                 themeMode = themeMode,
                 navigationItem = navigationItem,
                 adbManager = adbManager,
                 selectedDevice = deviceManager.selectedDevice,
+                commanderOpen = commanderOpen,
+                onCommanderDismiss = { commanderOpen = false },
+                onCommanderAction = { action ->
+                    action.action()
+                    commanderOpen = false
+                },
+                commanderRegistry = commanderRegistry,
             )
         }
     }
@@ -153,12 +168,14 @@ private fun MenuBarScope.ThemeMenu(
 @Composable
 private fun MenuBarScope.DeviceMenu(deviceManager: DeviceManager) {
     val devices = deviceManager.devices
-    Menu("Device") {
+    val selectedId = deviceManager.selectedDeviceId
+    val title = selectedId ?: "Device"
+    Menu(title) {
         if (devices.isEmpty()) {
             Item("Refresh") { }
         } else {
             devices.forEach { device ->
-                val isSelected = device.id == deviceManager.selectedDeviceId
+                val isSelected = device.id == selectedId
                 val prefix = if (isSelected) "✓ " else "  "
                 Item("$prefix${device.id}") {
                     deviceManager.selectDevice(device.id)
