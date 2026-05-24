@@ -25,6 +25,7 @@ import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceManager
+import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.device.PackageManager
@@ -260,6 +261,14 @@ fun main() = application {
                     selectedBatch = emptySet()
                     batchMode = !batchMode
                 },
+                onPackageContextAction = { action, packageName ->
+                    val deviceId = deviceManager.selectedDeviceId ?: return@App
+                    runAdbAction(adbManager.adbPath, deviceId, action, packageName)
+                    if (action in setOf(PackageContextAction.Uninstall, PackageContextAction.Enable, PackageContextAction.Disable)) {
+                        packageManager.refresh(deviceId, packageFilter)
+                    }
+                },
+                onBackToPackageList = { selectedPackage = null },
                 askBeforeUninstall = askBeforeUninstall,
                 onAskBeforeUninstallChange = { askBeforeUninstall = it },
                 askBeforeClearData = askBeforeClearData,
@@ -297,6 +306,80 @@ private fun runAdbInstall(adbPath: String, deviceId: String, apkFile: String): I
         val msg = e.message ?: "Unknown error"
         InstallState.Error(summary = msg, fullLog = msg)
     }
+}
+
+private fun runAdbAction(adbPath: String, deviceId: String, action: PackageContextAction, packageName: String) {
+    Thread {
+        try {
+            when (action) {
+                PackageContextAction.Open -> {
+                    runAdbShell(adbPath, deviceId,
+                        "monkey -p $packageName -c android.intent.category.LAUNCHER 1"
+                    )
+                }
+                PackageContextAction.ForceStop -> {
+                    runAdbShell(adbPath, deviceId, "am force-stop $packageName")
+                }
+                PackageContextAction.Restart -> {
+                    runAdbShell(adbPath, deviceId, "am force-stop $packageName")
+                    runAdbShell(adbPath, deviceId,
+                        "monkey -p $packageName -c android.intent.category.LAUNCHER 1"
+                    )
+                }
+                PackageContextAction.Uninstall -> {
+                    ProcessBuilder(adbPath, "-s", deviceId, "uninstall", packageName)
+                        .redirectErrorStream(true)
+                        .start()
+                        .waitFor()
+                }
+                PackageContextAction.ClearData -> {
+                    runAdbShell(adbPath, deviceId, "pm clear $packageName")
+                }
+                PackageContextAction.Enable -> {
+                    runAdbShell(adbPath, deviceId, "pm enable $packageName")
+                }
+                PackageContextAction.Disable -> {
+                    runAdbShell(adbPath, deviceId, "pm disable-user $packageName")
+                }
+                PackageContextAction.Home -> {
+                    runAdbShell(adbPath, deviceId, "input keyevent KEYCODE_HOME")
+                }
+                PackageContextAction.Copy -> {
+                    Toolkit.getDefaultToolkit()
+                        .systemClipboard
+                        .setContents(StringSelection(packageName), null)
+                }
+                PackageContextAction.OpenAppInfo -> {
+                    runAdbShell(adbPath, deviceId,
+                        "am start -a android.settings.APPLICATION_DETAILS_SETTINGS -d package:$packageName"
+                    )
+                }
+                PackageContextAction.ViewAtPlaystore -> {
+                    runAdbShell(adbPath, deviceId,
+                        "am start -a android.intent.action.VIEW -d https://play.google.com/store/apps/details?id=$packageName"
+                    )
+                }
+                PackageContextAction.ViewAtDesktop -> {
+                    val uri = java.net.URI("https://play.google.com/store/apps/details?id=$packageName")
+                    java.awt.Desktop.getDesktop().browse(uri)
+                }
+                PackageContextAction.FindOnline -> {
+                    val uri = java.net.URI("https://www.google.com/search?q=android+app+$packageName")
+                    java.awt.Desktop.getDesktop().browse(uri)
+                }
+            }
+        } catch (_: Exception) {
+        }
+    }.start()
+}
+
+private fun runAdbShell(adbPath: String, deviceId: String, command: String) {
+    ProcessBuilder(
+        adbPath, "-s", deviceId, "shell", command,
+    )
+        .redirectErrorStream(true)
+        .start()
+        .waitFor()
 }
 
 @Composable

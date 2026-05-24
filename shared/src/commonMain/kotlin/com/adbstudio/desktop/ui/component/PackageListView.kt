@@ -22,6 +22,8 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -30,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -53,6 +57,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 
@@ -64,6 +69,7 @@ fun PackageListView(
     packageFilter: PackageFilter,
     onFilterChange: (PackageFilter) -> Unit,
     onInstallApk: () -> Unit,
+    onPackageContextAction: (PackageContextAction, String) -> Unit,
     batchMode: Boolean,
     selectedBatch: Set<PackageInfo>,
     onBatchToggle: (PackageInfo) -> Unit,
@@ -74,6 +80,8 @@ fun PackageListView(
     val listState = rememberLazyListState()
     var showMenu by remember { mutableStateOf(false) }
     var showFilterDialog by remember { mutableStateOf(false) }
+    var showContextMenu by remember { mutableStateOf(false) }
+    var contextMenuPackage by remember { mutableStateOf<PackageInfo?>(null) }
 
     val filtered = remember(packages, searchQuery) {
         if (searchQuery.isBlank()) {
@@ -302,29 +310,31 @@ fun PackageListView(
                             )
                         }
                     } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(shape)
-                                .background(bgColor)
-                                .clickable {
-                                    focusedIndex = index
-                                    onPackageSelected(pkg)
-                                }
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                        ) {
-                            Text(
-                                text = pkg.packageName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = if (isFocused) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                },
-                            )
-                        }
+                        PackageListItem(
+                            pkg = pkg,
+                            isFocused = isFocused,
+                            shape = shape,
+                            bgColor = bgColor,
+                            showContextMenu = showContextMenu,
+                            contextMenuPackage = contextMenuPackage,
+                            onFocus = {
+                                focusedIndex = index
+                                onPackageSelected(pkg)
+                            },
+                            onContextMenu = {
+                                contextMenuPackage = pkg
+                                showContextMenu = true
+                            },
+                            onDismissContextMenu = {
+                                showContextMenu = false
+                                contextMenuPackage = null
+                            },
+                            onAction = { action ->
+                                showContextMenu = false
+                                contextMenuPackage = null
+                                onPackageContextAction(action, pkg.packageName)
+                            },
+                        )
                     }
                 }
             }
@@ -336,6 +346,144 @@ fun PackageListView(
                     .width(8.dp),
                 adapter = rememberScrollbarAdapter(listState),
             )
+        }
+    }
+}
+
+private val contextMenuItems = listOf(
+    "Open" to PackageContextAction.Open,
+    "Force Stop" to PackageContextAction.ForceStop,
+    "Restart" to PackageContextAction.Restart,
+    "Uninstall" to PackageContextAction.Uninstall,
+    "Clear Data" to PackageContextAction.ClearData,
+    "Enable" to PackageContextAction.Enable,
+    "Disable" to PackageContextAction.Disable,
+    "Home" to PackageContextAction.Home,
+    null,
+    "Copy" to PackageContextAction.Copy,
+    "Open App Info" to PackageContextAction.OpenAppInfo,
+    "View at Playstore" to PackageContextAction.ViewAtPlaystore,
+    "View at Desktop" to PackageContextAction.ViewAtDesktop,
+    "Find online" to PackageContextAction.FindOnline,
+)
+
+@Composable
+private fun PackageListItem(
+    pkg: PackageInfo,
+    isFocused: Boolean,
+    shape: RoundedCornerShape,
+    bgColor: Color,
+    showContextMenu: Boolean,
+    contextMenuPackage: PackageInfo?,
+    onFocus: () -> Unit,
+    onContextMenu: () -> Unit,
+    onDismissContextMenu: () -> Unit,
+    onAction: (PackageContextAction) -> Unit,
+) {
+    var showMoreSubmenu by remember { mutableStateOf(false) }
+
+    Box {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(bgColor)
+                .clickable { onFocus() }
+                .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = pkg.packageName,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = if (isFocused) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                modifier = Modifier.weight(1f),
+            )
+
+            Box {
+                IconButton(
+                    onClick = onContextMenu,
+                    modifier = Modifier.size(28.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More actions",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showContextMenu && contextMenuPackage == pkg,
+                    onDismissRequest = {
+                        showMoreSubmenu = false
+                        onDismissContextMenu()
+                    },
+                ) {
+                    if (showMoreSubmenu) {
+                        DropdownMenuItem(
+                            text = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            },
+                            onClick = { showMoreSubmenu = false },
+                        )
+                        contextMenuItems.drop(5).forEach { item ->
+                            if (item == null) {
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.outlineVariant,
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                )
+                            } else {
+                                val (label, action) = item
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = {
+                                        showMoreSubmenu = false
+                                        onAction(action)
+                                    },
+                                )
+                            }
+                        }
+                    } else {
+                        contextMenuItems.take(5).filterNotNull().forEach { item ->
+                            val (label, action) = item
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = {
+                                    showMoreSubmenu = false
+                                    onAction(action)
+                                },
+                            )
+                        }
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            modifier = Modifier.padding(vertical = 4.dp),
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("More", modifier = Modifier.weight(1f))
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                    )
+                                }
+                            },
+                            onClick = { showMoreSubmenu = true },
+                        )
+                    }
+                }
+            }
         }
     }
 }

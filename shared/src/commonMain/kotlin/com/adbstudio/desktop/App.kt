@@ -12,6 +12,7 @@ import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderDialog
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceInfo
+import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.navigation.NavigationItem
@@ -45,6 +46,8 @@ fun App(
     selectedBatch: Set<PackageInfo>,
     onBatchToggle: (PackageInfo) -> Unit,
     onBatchCancel: () -> Unit,
+    onPackageContextAction: (PackageContextAction, String) -> Unit,
+    onBackToPackageList: () -> Unit,
     askBeforeUninstall: Boolean,
     onAskBeforeUninstallChange: (Boolean) -> Unit,
     askBeforeClearData: Boolean,
@@ -66,6 +69,10 @@ fun App(
                         packageFilter = packageFilter,
                         onFilterChange = onFilterChange,
                         onInstallApk = onInstallApk,
+                        onPackageContextAction = onPackageContextAction,
+                        onBackToPackageList = onBackToPackageList,
+                        askBeforeUninstall = askBeforeUninstall,
+                        askBeforeClearData = askBeforeClearData,
                         batchMode = batchMode,
                         selectedBatch = selectedBatch,
                         onBatchToggle = onBatchToggle,
