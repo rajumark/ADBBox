@@ -19,6 +19,8 @@ import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceManager
+import com.adbstudio.desktop.device.PackageInfo
+import com.adbstudio.desktop.device.PackageManager
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.util.Preferences
@@ -68,6 +70,22 @@ fun main() = application {
         var themeMode by remember { mutableStateOf(initialTheme) }
         var navigationItem by remember (initialScreen) { mutableStateOf(initialScreen) }
         val commanderRegistry = remember { CommanderRegistry() }
+        val packageManager = remember { PackageManager(adbManager.adbPath) }
+        var selectedPackage by remember { mutableStateOf<PackageInfo?>(null) }
+
+        LaunchedEffect(navigationItem, deviceManager.selectedDeviceId) {
+            val deviceId = deviceManager.selectedDeviceId
+            if (deviceId != null) {
+                packageManager.refresh(deviceId)
+                if (navigationItem == NavigationItem.Apps) {
+                    selectedPackage = null
+                    while (true) {
+                        delay(5000)
+                        packageManager.refresh(deviceId)
+                    }
+                }
+            }
+        }
 
         LaunchedEffect(navigationItem) {
             prefs.lastScreen = navigationItem.name
@@ -128,6 +146,9 @@ fun main() = application {
                 navigationItem = navigationItem,
                 adbManager = adbManager,
                 selectedDevice = deviceManager.selectedDevice,
+                packages = packageManager.packages,
+                selectedPackage = selectedPackage,
+                onPackageSelected = { selectedPackage = it },
                 commanderOpen = commanderOpen,
                 onCommanderDismiss = { commanderOpen = false },
                 onCommanderAction = { action ->

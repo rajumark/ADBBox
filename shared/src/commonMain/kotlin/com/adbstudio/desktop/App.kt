@@ -12,6 +12,7 @@ import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderDialog
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceInfo
+import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.AdbStudioTheme
 import com.adbstudio.desktop.theme.ThemeMode
@@ -27,6 +28,9 @@ fun App(
     navigationItem: NavigationItem,
     adbManager: AdbManager,
     selectedDevice: DeviceInfo?,
+    packages: List<PackageInfo>,
+    selectedPackage: PackageInfo?,
+    onPackageSelected: (PackageInfo) -> Unit,
     commanderOpen: Boolean,
     onCommanderDismiss: () -> Unit,
     onCommanderAction: (CommanderAction) -> Unit,
@@ -36,7 +40,11 @@ fun App(
         Box(modifier = Modifier.fillMaxSize()) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 when (navigationItem) {
-                    NavigationItem.Apps -> AppsScreen(adbManager = adbManager)
+                    NavigationItem.Apps -> AppsScreen(
+                        packages = packages,
+                        selectedPackage = selectedPackage,
+                        onPackageSelected = onPackageSelected,
+                    )
                     NavigationItem.DebugInfo -> DebugInfoScreen(
                         adbManager = adbManager,
                         selectedDevice = selectedDevice,
