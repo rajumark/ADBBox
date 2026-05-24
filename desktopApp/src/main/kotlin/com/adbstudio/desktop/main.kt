@@ -18,15 +18,25 @@ import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
+import com.adbstudio.desktop.device.DeviceManager
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import kotlin.time.TimeSource
+import kotlinx.coroutines.delay
 
 fun main() = application {
     val adbManager = remember { AdbManager() }
+    val deviceManager = remember { DeviceManager(adbManager.adbPath) }
     var commanderOpen by remember { mutableStateOf(false) }
     var lastShiftTime by remember { mutableStateOf(TimeSource.Monotonic.markNow()) }
     val doubleShiftThresholdMs = 400.0
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            deviceManager.refresh()
+            delay(3000)
+        }
+    }
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -92,7 +102,7 @@ fun main() = application {
                 current = themeMode,
                 onSelect = { themeMode = it },
             )
-            DeviceMenu()
+            DeviceMenu(deviceManager)
             HelpMenu()
         }
 
@@ -109,6 +119,7 @@ fun main() = application {
                 themeMode = themeMode,
                 navigationItem = navigationItem,
                 adbManager = adbManager,
+                selectedDevice = deviceManager.selectedDevice,
             )
         }
     }
@@ -140,19 +151,22 @@ private fun MenuBarScope.ThemeMenu(
 }
 
 @Composable
-private fun MenuBarScope.DeviceMenu() {
+private fun MenuBarScope.DeviceMenu(deviceManager: DeviceManager) {
+    val devices = deviceManager.devices
     Menu("Device") {
-        Item("Connect Device…") { }
-        Item("Disconnect Device") { }
-        Separator()
-        Item("Screen Capture") { }
-        Item("Screen Record") { }
-        Separator()
-        Item("Install APK…") { }
-        Item("Pull File…") { }
-        Item("Push File…") { }
-        Separator()
-        Item("Restart Device") { }
+        if (devices.isEmpty()) {
+            Item("Refresh") { }
+        } else {
+            devices.forEach { device ->
+                val isSelected = device.id == deviceManager.selectedDeviceId
+                val prefix = if (isSelected) "✓ " else "  "
+                Item("$prefix${device.id}") {
+                    deviceManager.selectDevice(device.id)
+                }
+            }
+            Separator()
+            Item("Refresh") { }
+        }
     }
 }
 

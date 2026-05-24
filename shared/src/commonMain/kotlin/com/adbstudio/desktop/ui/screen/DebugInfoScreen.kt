@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,13 +33,18 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.adbstudio.desktop.adb.AdbManager
+import com.adbstudio.desktop.device.DeviceInfo
 import com.adbstudio.desktop.util.FileEntry
 import com.adbstudio.desktop.util.listDirectoryTree
 
 @Composable
-fun DebugInfoScreen(adbManager: AdbManager) {
+fun DebugInfoScreen(
+    adbManager: AdbManager,
+    selectedDevice: DeviceInfo?,
+) {
     val clipboardManager = LocalClipboardManager.current
-    var copied by remember { mutableStateOf(false) }
+    var copiedAdb by remember { mutableStateOf(false) }
+    var copiedDevice by remember { mutableStateOf(false) }
     val treeEntries = remember(adbManager.appDataDir) {
         listDirectoryTree(adbManager.appDataDir)
     }
@@ -58,13 +64,27 @@ fun DebugInfoScreen(adbManager: AdbManager) {
         Spacer(modifier = Modifier.height(24.dp))
 
         InfoCard(
+            title = "Selected Device",
+            value = selectedDevice?.id ?: "No device connected",
+            valueColor = if (selectedDevice != null) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error,
+            onCopy = selectedDevice?.let { {
+                clipboardManager.setText(AnnotatedString(selectedDevice.id))
+                copiedDevice = true
+            } },
+            copied = copiedDevice,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InfoCard(
             title = "ADB Path",
             value = adbManager.adbPath,
             onCopy = {
                 clipboardManager.setText(AnnotatedString(adbManager.adbPath))
-                copied = true
+                copiedAdb = true
             },
-            copied = copied,
+            copied = copiedAdb,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +131,7 @@ fun DebugInfoScreen(adbManager: AdbManager) {
                         .horizontalScroll(rememberScrollState()),
                 ) {
                     treeEntries.forEach { entry ->
-                        FileTreeRow(entry, depth = 0)
+                        FileTreeRow(entry)
                     }
                 }
             }
@@ -174,7 +194,7 @@ private fun InfoCard(
 }
 
 @Composable
-private fun FileTreeRow(entry: FileEntry, depth: Int) {
+private fun FileTreeRow(entry: FileEntry) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +202,7 @@ private fun FileTreeRow(entry: FileEntry, depth: Int) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = if (entry.isDirectory) "📁 " else "📄 ",
+            text = if (entry.isDirectory) "\uD83D\uDCC1 " else "\uD83D\uDCC4 ",
             style = MaterialTheme.typography.bodySmall,
         )
         Text(
@@ -206,7 +226,7 @@ private fun FileTreeRow(entry: FileEntry, depth: Int) {
         }
     }
     entry.children.forEach { child ->
-        FileTreeRow(child, depth + 1)
+        FileTreeRow(child)
     }
 }
 

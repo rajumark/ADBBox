@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.adbstudio.desktop.device.DeviceInfo
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.AdbStudioTheme
 import com.adbstudio.desktop.theme.ThemeMode
@@ -18,12 +19,16 @@ fun App(
     themeMode: ThemeMode,
     navigationItem: NavigationItem,
     adbManager: AdbManager,
+    selectedDevice: DeviceInfo?,
 ) {
     AdbStudioTheme(themeMode = themeMode) {
         Surface(modifier = Modifier.fillMaxSize()) {
             when (navigationItem) {
                 NavigationItem.Apps -> AppsScreen(adbManager = adbManager)
-                NavigationItem.DebugInfo -> DebugInfoScreen(adbManager = adbManager)
+                NavigationItem.DebugInfo -> DebugInfoScreen(
+                    adbManager = adbManager,
+                    selectedDevice = selectedDevice,
+                )
                 NavigationItem.Settings -> SettingsScreen()
                 NavigationItem.UiInspector -> UiInspectorScreen()
             }
