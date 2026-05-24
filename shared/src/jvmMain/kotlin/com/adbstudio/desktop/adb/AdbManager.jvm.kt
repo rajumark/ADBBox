@@ -7,10 +7,12 @@ import java.util.zip.ZipInputStream
 actual class AdbManager {
     actual val adbPath: String
     actual val isReady: Boolean
+    actual val appDataDir: String
 
     init {
         val os = detectOs()
         val appDir = getAppDataDir(os)
+        appDataDir = appDir.absolutePath
         val adbFile = resolveAdb(os, appDir)
         if (adbFile != null) {
             grantPermissions(adbFile)
