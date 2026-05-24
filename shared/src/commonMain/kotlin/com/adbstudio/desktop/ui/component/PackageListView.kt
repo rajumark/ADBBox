@@ -6,10 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,7 +21,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +53,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 
 @Composable
@@ -44,10 +61,19 @@ fun PackageListView(
     packages: List<PackageInfo>,
     selectedPackage: PackageInfo?,
     onPackageSelected: (PackageInfo) -> Unit,
+    packageFilter: PackageFilter,
+    onFilterChange: (PackageFilter) -> Unit,
+    onInstallApk: () -> Unit,
+    batchMode: Boolean,
+    selectedBatch: Set<PackageInfo>,
+    onBatchToggle: (PackageInfo) -> Unit,
+    onBatchCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    var showMenu by remember { mutableStateOf(false) }
+    var showFilterDialog by remember { mutableStateOf(false) }
 
     val filtered = remember(packages, searchQuery) {
         if (searchQuery.isBlank()) {
@@ -65,11 +91,22 @@ fun PackageListView(
         }
     }
 
+    if (showFilterDialog) {
+        PackageFilterDialog(
+            current = packageFilter,
+            onSelect = { filter ->
+                showFilterDialog = false
+                onFilterChange(filter)
+            },
+            onDismiss = { showFilterDialog = false },
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .onPreviewKeyEvent { event ->
-                if (event.type == KeyEventType.KeyDown) {
+                if (event.type == KeyEventType.KeyDown && !batchMode) {
                     when (event.key) {
                         Key.DirectionDown -> {
                             if (filtered.isNotEmpty()) {
@@ -90,39 +127,128 @@ fun PackageListView(
                 } else false
             },
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            BasicTextField(
-                value = searchQuery,
-                onValueChange = { value ->
-                    searchQuery = value
-                    focusedIndex = if (filtered.isNotEmpty()) 0 else -1
-                },
+        if (batchMode) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                ),
-                singleLine = true,
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                decorationBox = { innerTextField ->
-                    Box {
-                        if (searchQuery.isEmpty()) {
-                            Text(
-                                text = "Search ${packages.size} packages",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "${selectedBatch.size} Selected",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.weight(1f))
+                Button(onClick = onBatchCancel) { Text("Cancel") }
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 4.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(horizontal = 4.dp),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth().height(40.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                        Box(modifier = Modifier.weight(1f)) {
+                            BasicTextField(
+                                value = searchQuery,
+                                onValueChange = { value ->
+                                    searchQuery = value
+                                    focusedIndex = if (filtered.isNotEmpty()) 0 else -1
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                textStyle = TextStyle(
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                ),
+                                singleLine = true,
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                                decorationBox = { innerTextField ->
+                                    Box {
+                                        if (searchQuery.isEmpty()) {
+                                            Text(
+                                                text = "Search ${packages.size} packages",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                        innerTextField()
+                                    }
+                                },
                             )
                         }
-                        innerTextField()
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(
+                                onClick = { searchQuery = "" },
+                                modifier = Modifier.size(32.dp),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear search",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
                     }
-                },
-            )
+                }
+
+                Box {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+
+                    if (showMenu) {
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Types") },
+                                onClick = {
+                                    showMenu = false
+                                    showFilterDialog = true
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Install App") },
+                                onClick = {
+                                    showMenu = false
+                                    onInstallApk()
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Batch Operation") },
+                                onClick = {
+                                    showMenu = false
+                                    onBatchCancel()
+                                },
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         Box(
@@ -146,34 +272,59 @@ fun PackageListView(
                         )
                         else -> RoundedCornerShape(2.dp)
                     }
-                    val bgColor = if (isFocused) {
+                    val bgColor = if (isFocused && !batchMode) {
                         MaterialTheme.colorScheme.primaryContainer
                     } else {
                         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     }
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(shape)
-                            .background(bgColor)
-                            .clickable {
-                                focusedIndex = index
-                                onPackageSelected(pkg)
-                            }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = pkg.packageName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = if (isFocused) {
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                        )
+                    if (batchMode) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape)
+                                .background(bgColor)
+                                .clickable { onBatchToggle(pkg) }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = pkg in selectedBatch,
+                                onCheckedChange = { onBatchToggle(pkg) },
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = pkg.packageName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape)
+                                .background(bgColor)
+                                .clickable {
+                                    focusedIndex = index
+                                    onPackageSelected(pkg)
+                                }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                        ) {
+                            Text(
+                                text = pkg.packageName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = if (isFocused) {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -187,4 +338,57 @@ fun PackageListView(
             )
         }
     }
+}
+
+@Composable
+private fun PackageFilterDialog(
+    current: PackageFilter,
+    onSelect: (PackageFilter) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Package Types",
+                style = MaterialTheme.typography.titleSmall,
+            )
+        },
+        text = {
+            Column {
+                PackageFilter.entries.forEachIndexed { index, filter ->
+                    val shape = when {
+                        PackageFilter.entries.size == 1 -> RoundedCornerShape(8.dp)
+                        index == 0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                        index == PackageFilter.entries.lastIndex -> RoundedCornerShape(
+                            bottomStart = 8.dp, bottomEnd = 8.dp,
+                        )
+                        else -> RoundedCornerShape(2.dp)
+                    }
+                    val bgColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(shape)
+                            .background(bgColor)
+                            .clickable { onSelect(filter) }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = filter == current,
+                            onClick = { onSelect(filter) },
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            filter.displayName,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+    )
 }

@@ -10,22 +10,33 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.MenuBarScope
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceManager
+import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.device.PackageManager
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
+import com.adbstudio.desktop.ui.component.InstallState
 import com.adbstudio.desktop.util.Preferences
+import java.awt.FileDialog
+import java.awt.Frame
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
+import java.io.File
 import kotlin.time.TimeSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 fun main() = application {
     val adbManager = remember { AdbManager() }
@@ -37,9 +48,16 @@ fun main() = application {
     val initialTheme = remember {
         try { ThemeMode.valueOf(prefs.themeMode) } catch (_: Exception) { ThemeMode.System }
     }
+    val initialFilter = remember {
+        try { PackageFilter.valueOf(prefs.packageFilter) } catch (_: Exception) { PackageFilter.User }
+    }
     var commanderOpen by remember { mutableStateOf(false) }
     var lastShiftTime by remember { mutableStateOf(TimeSource.Monotonic.markNow()) }
     val doubleShiftThresholdMs = 400.0
+    var installState by remember { mutableStateOf<InstallState>(InstallState.Idle) }
+    var apkToInstall by remember { mutableStateOf<String?>(null) }
+    var batchMode by remember { mutableStateOf(false) }
+    var selectedBatch by remember { mutableStateOf(setOf<PackageInfo>()) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -50,6 +68,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
+        state = rememberWindowState(width = 1200.dp, height = 800.dp),
         title = "ADBStudio",
         onPreviewKeyEvent = { event ->
             if (event.type == KeyEventType.KeyUp &&
@@ -72,16 +91,17 @@ fun main() = application {
         val commanderRegistry = remember { CommanderRegistry() }
         val packageManager = remember { PackageManager(adbManager.adbPath) }
         var selectedPackage by remember { mutableStateOf<PackageInfo?>(null) }
+        var packageFilter by remember { mutableStateOf(initialFilter) }
 
-        LaunchedEffect(navigationItem, deviceManager.selectedDeviceId) {
+        LaunchedEffect(navigationItem, deviceManager.selectedDeviceId, packageFilter) {
             val deviceId = deviceManager.selectedDeviceId
             if (deviceId != null) {
-                packageManager.refresh(deviceId)
+                packageManager.refresh(deviceId, packageFilter)
                 if (navigationItem == NavigationItem.Apps) {
                     selectedPackage = null
                     while (true) {
                         delay(5000)
-                        packageManager.refresh(deviceId)
+                        packageManager.refresh(deviceId, packageFilter)
                     }
                 }
             }
@@ -93,6 +113,21 @@ fun main() = application {
 
         LaunchedEffect(themeMode) {
             prefs.themeMode = themeMode.name
+        }
+
+        LaunchedEffect(packageFilter) {
+            prefs.packageFilter = packageFilter.name
+        }
+
+        LaunchedEffect(apkToInstall) {
+            val apkFile = apkToInstall ?: return@LaunchedEffect
+            val deviceId = deviceManager.selectedDeviceId ?: return@LaunchedEffect
+            val name = File(apkFile).name
+            installState = InstallState.Installing(fileName = name)
+            installState = withContext(Dispatchers.IO) {
+                runAdbInstall(adbManager.adbPath, deviceId, apkFile)
+            }
+            apkToInstall = null
         }
 
         LaunchedEffect(Unit) {
@@ -149,6 +184,40 @@ fun main() = application {
                 packages = packageManager.packages,
                 selectedPackage = selectedPackage,
                 onPackageSelected = { selectedPackage = it },
+                packageFilter = packageFilter,
+                onFilterChange = { packageFilter = it },
+                onInstallApk = {
+                    val deviceId = deviceManager.selectedDeviceId
+                    if (deviceId == null) return@App
+                    val dialog = FileDialog(null as Frame?, "Select APK File", FileDialog.LOAD)
+                    dialog.file = "*.apk"
+                    dialog.isVisible = true
+                    val dir = dialog.directory
+                    val file = dialog.file
+                    if (file == null) return@App
+                    apkToInstall = File(dir, file).absolutePath
+                },
+                installState = installState,
+                onInstallDismiss = { installState = InstallState.Idle },
+                onCopyError = { text ->
+                    Toolkit.getDefaultToolkit()
+                        .systemClipboard
+                        .setContents(StringSelection(text), null)
+                },
+                batchMode = batchMode,
+                selectedBatch = selectedBatch,
+                onBatchToggle = { pkg ->
+                    selectedBatch = if (pkg in selectedBatch) {
+                        selectedBatch - pkg
+                    } else {
+                        selectedBatch + pkg
+                    }
+                },
+                onBatchCancel = {
+                    selectedPackage = null
+                    selectedBatch = emptySet()
+                    batchMode = !batchMode
+                },
                 commanderOpen = commanderOpen,
                 onCommanderDismiss = { commanderOpen = false },
                 onCommanderAction = { action ->
@@ -158,6 +227,28 @@ fun main() = application {
                 commanderRegistry = commanderRegistry,
             )
         }
+    }
+}
+
+private fun runAdbInstall(adbPath: String, deviceId: String, apkFile: String): InstallState {
+    return try {
+        val process = ProcessBuilder(
+            adbPath, "-s", deviceId, "install", "-r", apkFile,
+        )
+            .redirectErrorStream(true)
+            .start()
+        val output = process.inputStream.bufferedReader().readText()
+        val exitCode = process.waitFor()
+        if (exitCode == 0 && output.contains("Success")) {
+            InstallState.Success("App installed successfully on $deviceId.")
+        } else {
+            val lines = output.lines()
+            val summary = if (lines.size <= 6) lines.joinToString("\n") else lines.take(6).joinToString("\n")
+            InstallState.Error(summary = summary, fullLog = output.trim())
+        }
+    } catch (e: Exception) {
+        val msg = e.message ?: "Unknown error"
+        InstallState.Error(summary = msg, fullLog = msg)
     }
 }
 

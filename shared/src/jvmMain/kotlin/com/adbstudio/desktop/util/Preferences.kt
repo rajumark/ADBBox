@@ -31,4 +31,11 @@ class Preferences(appDataDir: String) {
             props.setProperty("themeMode", value)
             save()
         }
+
+    var packageFilter: String
+        get() = props.getProperty("packageFilter", "User")
+        set(value) {
+            props.setProperty("packageFilter", value)
+            save()
+        }
 }

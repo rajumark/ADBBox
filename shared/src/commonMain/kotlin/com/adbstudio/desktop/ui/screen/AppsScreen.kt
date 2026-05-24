@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.ui.component.PackageListView
 import com.adbstudio.desktop.ui.component.SplitPane
@@ -19,6 +20,13 @@ fun AppsScreen(
     packages: List<PackageInfo>,
     selectedPackage: PackageInfo?,
     onPackageSelected: (PackageInfo) -> Unit,
+    packageFilter: PackageFilter,
+    onFilterChange: (PackageFilter) -> Unit,
+    onInstallApk: () -> Unit,
+    batchMode: Boolean,
+    selectedBatch: Set<PackageInfo>,
+    onBatchToggle: (PackageInfo) -> Unit,
+    onBatchCancel: () -> Unit,
 ) {
     SplitPane(
         modifier = Modifier.fillMaxSize(),
@@ -28,6 +36,13 @@ fun AppsScreen(
                 packages = packages,
                 selectedPackage = selectedPackage,
                 onPackageSelected = onPackageSelected,
+                packageFilter = packageFilter,
+                onFilterChange = onFilterChange,
+                onInstallApk = onInstallApk,
+                batchMode = batchMode,
+                selectedBatch = selectedBatch,
+                onBatchToggle = onBatchToggle,
+                onBatchCancel = onBatchCancel,
                 modifier = Modifier.fillMaxSize().padding(top = 8.dp),
             )
         },
@@ -38,7 +53,7 @@ fun AppsScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = selectedPackage?.packageName ?: "App Details",
+                        text = if (batchMode) "App Details" else (selectedPackage?.packageName ?: "App Details"),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

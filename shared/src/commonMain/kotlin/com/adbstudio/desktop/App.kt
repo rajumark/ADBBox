@@ -12,11 +12,14 @@ import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderDialog
 import com.adbstudio.desktop.commander.CommanderRegistry
 import com.adbstudio.desktop.device.DeviceInfo
+import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.AdbStudioTheme
 import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.adb.AdbManager
+import com.adbstudio.desktop.ui.component.InstallApkDialog
+import com.adbstudio.desktop.ui.component.InstallState
 import com.adbstudio.desktop.ui.screen.AppsScreen
 import com.adbstudio.desktop.ui.screen.DebugInfoScreen
 import com.adbstudio.desktop.ui.screen.SettingsScreen
@@ -31,6 +34,16 @@ fun App(
     packages: List<PackageInfo>,
     selectedPackage: PackageInfo?,
     onPackageSelected: (PackageInfo) -> Unit,
+    packageFilter: PackageFilter,
+    onFilterChange: (PackageFilter) -> Unit,
+    onInstallApk: () -> Unit,
+    installState: InstallState,
+    onInstallDismiss: () -> Unit,
+    onCopyError: (String) -> Unit,
+    batchMode: Boolean,
+    selectedBatch: Set<PackageInfo>,
+    onBatchToggle: (PackageInfo) -> Unit,
+    onBatchCancel: () -> Unit,
     commanderOpen: Boolean,
     onCommanderDismiss: () -> Unit,
     onCommanderAction: (CommanderAction) -> Unit,
@@ -44,6 +57,13 @@ fun App(
                         packages = packages,
                         selectedPackage = selectedPackage,
                         onPackageSelected = onPackageSelected,
+                        packageFilter = packageFilter,
+                        onFilterChange = onFilterChange,
+                        onInstallApk = onInstallApk,
+                        batchMode = batchMode,
+                        selectedBatch = selectedBatch,
+                        onBatchToggle = onBatchToggle,
+                        onBatchCancel = onBatchCancel,
                     )
                     NavigationItem.DebugInfo -> DebugInfoScreen(
                         adbManager = adbManager,
@@ -65,6 +85,12 @@ fun App(
                     onActionSelected = onCommanderAction,
                 )
             }
+
+            InstallApkDialog(
+                state = installState,
+                onDismiss = onInstallDismiss,
+                onCopyError = onCopyError,
+            )
         }
     }
 }
