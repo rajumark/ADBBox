@@ -38,4 +38,46 @@ class Preferences(appDataDir: String) {
             props.setProperty("packageFilter", value)
             save()
         }
+
+    var windowX: String
+        get() = props.getProperty("windowX", "")
+        set(value) {
+            props.setProperty("windowX", value)
+            save()
+        }
+
+    var windowY: String
+        get() = props.getProperty("windowY", "")
+        set(value) {
+            props.setProperty("windowY", value)
+            save()
+        }
+
+    var windowWidth: String
+        get() = props.getProperty("windowWidth", "1200")
+        set(value) {
+            props.setProperty("windowWidth", value)
+            save()
+        }
+
+    var windowHeight: String
+        get() = props.getProperty("windowHeight", "800")
+        set(value) {
+            props.setProperty("windowHeight", value)
+            save()
+        }
+
+    var askBeforeUninstall: Boolean
+        get() = props.getProperty("askBeforeUninstall", "true").toBoolean()
+        set(value) {
+            props.setProperty("askBeforeUninstall", value.toString())
+            save()
+        }
+
+    var askBeforeClearData: Boolean
+        get() = props.getProperty("askBeforeClearData", "true").toBoolean()
+        set(value) {
+            props.setProperty("askBeforeClearData", value.toString())
+            save()
+        }
 }

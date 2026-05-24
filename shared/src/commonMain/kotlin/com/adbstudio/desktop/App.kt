@@ -28,6 +28,7 @@ import com.adbstudio.desktop.ui.screen.UiInspectorScreen
 @Composable
 fun App(
     themeMode: ThemeMode,
+    onThemeChange: (ThemeMode) -> Unit,
     navigationItem: NavigationItem,
     adbManager: AdbManager,
     selectedDevice: DeviceInfo?,
@@ -44,6 +45,11 @@ fun App(
     selectedBatch: Set<PackageInfo>,
     onBatchToggle: (PackageInfo) -> Unit,
     onBatchCancel: () -> Unit,
+    askBeforeUninstall: Boolean,
+    onAskBeforeUninstallChange: (Boolean) -> Unit,
+    askBeforeClearData: Boolean,
+    onAskBeforeClearDataChange: (Boolean) -> Unit,
+    onNavigateToApps: () -> Unit,
     commanderOpen: Boolean,
     onCommanderDismiss: () -> Unit,
     onCommanderAction: (CommanderAction) -> Unit,
@@ -69,7 +75,15 @@ fun App(
                         adbManager = adbManager,
                         selectedDevice = selectedDevice,
                     )
-                    NavigationItem.Settings -> SettingsScreen()
+                    NavigationItem.Settings -> SettingsScreen(
+                        themeMode = themeMode,
+                        onThemeChange = onThemeChange,
+                        askBeforeUninstall = askBeforeUninstall,
+                        onAskBeforeUninstallChange = onAskBeforeUninstallChange,
+                        askBeforeClearData = askBeforeClearData,
+                        onAskBeforeClearDataChange = onAskBeforeClearDataChange,
+                        onBack = onNavigateToApps,
+                    )
                     NavigationItem.UiInspector -> UiInspectorScreen()
                 }
             }

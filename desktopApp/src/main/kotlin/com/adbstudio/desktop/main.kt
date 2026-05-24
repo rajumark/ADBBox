@@ -10,10 +10,14 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.MenuBarScope
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.adbstudio.desktop.adb.AdbManager
@@ -58,6 +62,22 @@ fun main() = application {
     var apkToInstall by remember { mutableStateOf<String?>(null) }
     var batchMode by remember { mutableStateOf(false) }
     var selectedBatch by remember { mutableStateOf(setOf<PackageInfo>()) }
+    var askBeforeUninstall by remember { mutableStateOf(prefs.askBeforeUninstall) }
+    var askBeforeClearData by remember { mutableStateOf(prefs.askBeforeClearData) }
+
+    val initialW = prefs.windowWidth.toIntOrNull() ?: 1200
+    val initialH = prefs.windowHeight.toIntOrNull() ?: 800
+    val initialPosX = prefs.windowX.toIntOrNull()
+    val initialPosY = prefs.windowY.toIntOrNull()
+
+    val windowState = rememberWindowState(
+        position = if (initialPosX != null && initialPosY != null) {
+            WindowPosition(initialPosX.dp, initialPosY.dp)
+        } else {
+            WindowPosition.PlatformDefault
+        },
+        size = DpSize(initialW.dp, initialH.dp),
+    )
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -66,9 +86,22 @@ fun main() = application {
         }
     }
 
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            windowState.position to windowState.size
+        }.collect { (pos, size) ->
+            if (pos is WindowPosition.Absolute) {
+                prefs.windowX = pos.x.value.toInt().toString()
+                prefs.windowY = pos.y.value.toInt().toString()
+            }
+            prefs.windowWidth = size.width.value.toInt().toString()
+            prefs.windowHeight = size.height.value.toInt().toString()
+        }
+    }
+
     Window(
         onCloseRequest = ::exitApplication,
-        state = rememberWindowState(width = 1200.dp, height = 800.dp),
+        state = windowState,
         title = "ADBStudio",
         onPreviewKeyEvent = { event ->
             if (event.type == KeyEventType.KeyUp &&
@@ -117,6 +150,14 @@ fun main() = application {
 
         LaunchedEffect(packageFilter) {
             prefs.packageFilter = packageFilter.name
+        }
+
+        LaunchedEffect(askBeforeUninstall) {
+            prefs.askBeforeUninstall = askBeforeUninstall
+        }
+
+        LaunchedEffect(askBeforeClearData) {
+            prefs.askBeforeClearData = askBeforeClearData
         }
 
         LaunchedEffect(apkToInstall) {
@@ -178,6 +219,7 @@ fun main() = application {
         CommanderHost(registry = commanderRegistry) {
             App(
                 themeMode = themeMode,
+                onThemeChange = { themeMode = it },
                 navigationItem = navigationItem,
                 adbManager = adbManager,
                 selectedDevice = deviceManager.selectedDevice,
@@ -218,6 +260,11 @@ fun main() = application {
                     selectedBatch = emptySet()
                     batchMode = !batchMode
                 },
+                askBeforeUninstall = askBeforeUninstall,
+                onAskBeforeUninstallChange = { askBeforeUninstall = it },
+                askBeforeClearData = askBeforeClearData,
+                onAskBeforeClearDataChange = { askBeforeClearData = it },
+                onNavigateToApps = { navigationItem = NavigationItem.Apps },
                 commanderOpen = commanderOpen,
                 onCommanderDismiss = { commanderOpen = false },
                 onCommanderAction = { action ->
