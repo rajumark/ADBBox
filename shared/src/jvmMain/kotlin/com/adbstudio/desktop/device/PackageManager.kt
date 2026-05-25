@@ -1,17 +1,74 @@
 package com.adbstudio.desktop.device
 
 import androidx.compose.runtime.mutableStateListOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class PackageManager(private val adbPath: String) {
+class PackageManager(
+    private val adbPath: String,
+    private val iconService: AppIconService? = null,
+) {
 
     private val _packages = mutableStateListOf<PackageInfo>()
     val packages: List<PackageInfo> get() = _packages
 
-    fun refresh(deviceId: String, filter: PackageFilter = PackageFilter.User) {
+    private var lastPackageNames = setOf<String>()
+    private val enrichedCache = mutableMapOf<String, PackageInfoWithIcon>()
+
+    suspend fun refresh(deviceId: String, filter: PackageFilter = PackageFilter.User) {
         val parsed = fetchPackages(deviceId, filter)
         if (parsed != _packages.toList()) {
             _packages.clear()
             _packages.addAll(parsed)
+        }
+    }
+
+    suspend fun refreshWithIcons(
+        deviceId: String,
+        filter: PackageFilter = PackageFilter.User,
+        iconService: AppIconService,
+    ) {
+        val parsed = fetchPackages(deviceId, filter)
+
+        val currentNames = parsed.map { it.packageName }.toSet()
+        val newNames = currentNames - lastPackageNames
+        val removedNames = lastPackageNames - currentNames
+
+        if (removedNames.isNotEmpty()) {
+            removedNames.forEach { enrichedCache.remove(it) }
+        }
+
+        if (newNames.isNotEmpty()) {
+            try {
+                val enriched = iconService.getPackageInfos(deviceId, newNames.toList())
+                enriched.forEach { enrichedCache[it.packageName] = it }
+            } catch (e: Exception) {
+                System.err.println("Failed to fetch icons: ${e.message}")
+            }
+        }
+
+        lastPackageNames = currentNames
+
+        val merged = parsed.map { pkg ->
+            val cached = enrichedCache[pkg.packageName]
+            if (cached != null) {
+                PackageInfo(
+                    packageName = pkg.packageName,
+                    label = cached.label,
+                    iconLocalPath = cached.iconLocalPath,
+                    versionName = cached.versionName,
+                    enabled = cached.enabled,
+                    isSystem = cached.isSystem,
+                )
+            } else {
+                pkg
+            }
+        }
+
+        if (merged != _packages.toList()) {
+            _packages.clear()
+            _packages.addAll(merged)
         }
     }
 

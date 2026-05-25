@@ -46,9 +46,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.Image
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
+import com.adbstudio.desktop.util.loadIconPainter
 
 @Composable
 fun PackageListView(
@@ -87,7 +90,10 @@ fun PackageListView(
         if (searchQuery.isBlank()) {
             packages
         } else {
-            packages.filter { it.packageName.contains(searchQuery, ignoreCase = true) }
+            packages.filter {
+                it.packageName.contains(searchQuery, ignoreCase = true) ||
+                it.label.contains(searchQuery, ignoreCase = true)
+            }
         }
     }
 
@@ -287,6 +293,7 @@ fun PackageListView(
                     }
 
                     if (batchMode) {
+                        val batchIconPainter = remember(pkg.iconLocalPath) { loadIconPainter(pkg.iconLocalPath) }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -301,8 +308,15 @@ fun PackageListView(
                                 onCheckedChange = { onBatchToggle(pkg) },
                             )
                             Spacer(Modifier.width(8.dp))
+                            if (batchIconPainter != null) {
+                                Image(
+                                    painter = batchIconPainter,
+                                    contentDescription = pkg.label,
+                                    modifier = Modifier.size(20.dp).padding(end = 6.dp),
+                                )
+                            }
                             Text(
-                                text = pkg.packageName,
+                                text = pkg.label,
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -382,6 +396,10 @@ private fun PackageListItem(
 ) {
     var showMoreSubmenu by remember { mutableStateOf(false) }
 
+    val iconPainter = remember(pkg.iconLocalPath) {
+        loadIconPainter(pkg.iconLocalPath)
+    }
+
     Box {
         Row(
             modifier = Modifier
@@ -389,21 +407,43 @@ private fun PackageListItem(
                 .clip(shape)
                 .background(bgColor)
                 .clickable { onFocus() }
-                .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+                .padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = pkg.packageName,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = if (isFocused) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-                modifier = Modifier.weight(1f),
-            )
+            if (iconPainter != null) {
+                Image(
+                    painter = iconPainter,
+                    contentDescription = pkg.label,
+                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                )
+            } else {
+                Spacer(Modifier.size(24.dp).padding(end = 8.dp))
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = pkg.label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isFocused) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+                Text(
+                    text = pkg.packageName,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (isFocused) {
+                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
 
             Box {
                 IconButton(

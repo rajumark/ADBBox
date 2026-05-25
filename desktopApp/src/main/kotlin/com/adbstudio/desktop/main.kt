@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -24,6 +25,7 @@ import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
+import com.adbstudio.desktop.device.AppIconService
 import com.adbstudio.desktop.device.DeviceManager
 import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
@@ -43,6 +45,7 @@ import java.io.File
 import kotlin.time.TimeSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 fun main() = application {
@@ -126,18 +129,20 @@ fun main() = application {
         var navigationItem by remember (initialScreen) { mutableStateOf(initialScreen) }
         val commanderRegistry = remember { CommanderRegistry() }
         val packageManager = remember { PackageManager(adbManager.adbPath) }
+        val iconService = remember { AppIconService(adbManager.adbPath, adbManager.appDataDir) }
+        val scope = rememberCoroutineScope()
         var selectedPackage by remember { mutableStateOf<PackageInfo?>(null) }
         var packageFilter by remember { mutableStateOf(initialFilter) }
 
         LaunchedEffect(navigationItem, deviceManager.selectedDeviceId, packageFilter) {
             val deviceId = deviceManager.selectedDeviceId
             if (deviceId != null) {
-                packageManager.refresh(deviceId, packageFilter)
+                packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
                 if (navigationItem == NavigationItem.Apps) {
                     selectedPackage = null
                     while (true) {
                         delay(5000)
-                        packageManager.refresh(deviceId, packageFilter)
+                        packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
                     }
                 }
             }
@@ -292,7 +297,9 @@ fun main() = application {
                     val deviceId = deviceManager.selectedDeviceId ?: return@App
                     runAdbAction(adbManager.adbPath, deviceId, action, packageName)
                     if (action in setOf(PackageContextAction.Uninstall, PackageContextAction.Enable, PackageContextAction.Disable)) {
-                        packageManager.refresh(deviceId, packageFilter)
+                        scope.launch {
+                            packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
+                        }
                     }
                 },
                 onBackToPackageList = { selectedPackage = null },
