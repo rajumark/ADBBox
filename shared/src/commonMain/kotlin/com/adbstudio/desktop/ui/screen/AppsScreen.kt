@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
+import com.adbstudio.desktop.device.PermissionInfo
 import com.adbstudio.desktop.ui.component.AdaptiveListDetail
 import com.adbstudio.desktop.ui.component.AppDetailsContent
 import com.adbstudio.desktop.ui.component.PackageListView
@@ -39,6 +40,9 @@ fun AppsScreen(
     onBatchToggle: (PackageInfo) -> Unit,
     onBatchCancel: () -> Unit,
     onBackToPackageList: () -> Unit,
+    onFetchPermissions: suspend (String) -> List<PermissionInfo> = { emptyList() },
+    onGrantPermission: suspend (String, String) -> Unit = { _, _ -> },
+    onRevokePermission: suspend (String, String) -> Unit = { _, _ -> },
 ) {
     var pendingUninstallPkg by remember { mutableStateOf<PackageInfo?>(null) }
     var pendingClearDataPkg by remember { mutableStateOf<PackageInfo?>(null) }
@@ -137,6 +141,9 @@ fun AppsScreen(
                     showBack = true,
                     onBack = onBack,
                     onAction = { action -> handleAction(action, selectedPackage.packageName) },
+                    onFetchPermissions = onFetchPermissions,
+                    onGrantPermission = onGrantPermission,
+                    onRevokePermission = onRevokePermission,
                 )
             } else {
                 Box(

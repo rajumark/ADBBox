@@ -29,6 +29,8 @@ import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
 import com.adbstudio.desktop.device.PackageManager
+import com.adbstudio.desktop.device.PermissionGroup
+import com.adbstudio.desktop.device.PermissionInfo
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.ui.component.InstallState
@@ -217,6 +219,28 @@ fun main() = application {
             HelpMenu()
         }
 
+        val onFetchPermissions: suspend (String) -> List<PermissionInfo> = { packageName ->
+            val deviceId = deviceManager.selectedDeviceId
+            if (deviceId == null) emptyList()
+            else fetchPermissions(adbManager.adbPath, deviceId, packageName)
+        }
+        val onGrantPermission: suspend (String, String) -> Unit = { packageName, permission ->
+            val deviceId = deviceManager.selectedDeviceId
+            if (deviceId != null) {
+                withContext(Dispatchers.IO) {
+                    runAdbShell(adbManager.adbPath, deviceId, "pm grant $packageName $permission")
+                }
+            }
+        }
+        val onRevokePermission: suspend (String, String) -> Unit = { packageName, permission ->
+            val deviceId = deviceManager.selectedDeviceId
+            if (deviceId != null) {
+                withContext(Dispatchers.IO) {
+                    runAdbShell(adbManager.adbPath, deviceId, "pm revoke $packageName $permission")
+                }
+            }
+        }
+
         CommanderHost(registry = commanderRegistry) {
             App(
                 themeMode = themeMode,
@@ -229,6 +253,9 @@ fun main() = application {
                 onPackageSelected = { selectedPackage = it },
                 packageFilter = packageFilter,
                 onFilterChange = { packageFilter = it },
+                onFetchPermissions = onFetchPermissions,
+                onGrantPermission = onGrantPermission,
+                onRevokePermission = onRevokePermission,
                 onInstallApk = {
                     val deviceId = deviceManager.selectedDeviceId
                     if (deviceId == null) return@App
@@ -380,6 +407,56 @@ private fun runAdbShell(adbPath: String, deviceId: String, command: String) {
         .redirectErrorStream(true)
         .start()
         .waitFor()
+}
+
+private suspend fun fetchPermissions(adbPath: String, deviceId: String, packageName: String): List<PermissionInfo> {
+    return withContext(Dispatchers.IO) {
+        try {
+            val process = ProcessBuilder(
+                adbPath, "-s", deviceId, "shell", "dumpsys", "package", packageName,
+            )
+                .redirectErrorStream(true)
+                .start()
+            val output = process.inputStream.bufferedReader().readText()
+            process.waitFor()
+            parsePermissionsOutput(output)
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+}
+
+private fun parsePermissionsOutput(output: String): List<PermissionInfo> {
+    val permissions = mutableListOf<PermissionInfo>()
+    var currentGroup: String? = null
+    val permissionRegex = Regex("""^\s+([\w.]+)""")
+
+    output.lines().forEach { line ->
+        when {
+            line.contains("requested permissions:") -> currentGroup = "requested_permissions"
+            line.contains("install permissions:") -> currentGroup = "install_permissions"
+            line.contains("runtime permissions:") -> currentGroup = "runtime_permissions"
+            line.isBlank() -> currentGroup = null
+            currentGroup != null -> {
+                val match = permissionRegex.find(line)
+                val permName = match?.groupValues?.getOrNull(1) ?: return@forEach
+
+                val group = when (currentGroup) {
+                    "runtime_permissions" -> PermissionGroup.Runtime
+                    "install_permissions" -> PermissionGroup.Install
+                    else -> PermissionGroup.Requested
+                }
+                val granted = when (currentGroup) {
+                    "runtime_permissions", "install_permissions" -> line.contains("granted=true")
+                    else -> false
+                }
+
+                permissions.add(PermissionInfo(permName, granted, group))
+            }
+        }
+    }
+
+    return permissions
 }
 
 @Composable

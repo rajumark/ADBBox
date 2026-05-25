@@ -15,6 +15,7 @@ import com.adbstudio.desktop.device.DeviceInfo
 import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageFilter
 import com.adbstudio.desktop.device.PackageInfo
+import com.adbstudio.desktop.device.PermissionInfo
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.AdbStudioTheme
 import com.adbstudio.desktop.theme.ThemeMode
@@ -53,6 +54,9 @@ fun App(
     askBeforeClearData: Boolean,
     onAskBeforeClearDataChange: (Boolean) -> Unit,
     onNavigateToApps: () -> Unit,
+    onFetchPermissions: suspend (String) -> List<PermissionInfo> = { emptyList() },
+    onGrantPermission: suspend (String, String) -> Unit = { _, _ -> },
+    onRevokePermission: suspend (String, String) -> Unit = { _, _ -> },
     commanderOpen: Boolean,
     onCommanderDismiss: () -> Unit,
     onCommanderAction: (CommanderAction) -> Unit,
@@ -77,6 +81,9 @@ fun App(
                         selectedBatch = selectedBatch,
                         onBatchToggle = onBatchToggle,
                         onBatchCancel = onBatchCancel,
+                        onFetchPermissions = onFetchPermissions,
+                        onGrantPermission = onGrantPermission,
+                        onRevokePermission = onRevokePermission,
                     )
                     NavigationItem.DebugInfo -> DebugInfoScreen(
                         adbManager = adbManager,

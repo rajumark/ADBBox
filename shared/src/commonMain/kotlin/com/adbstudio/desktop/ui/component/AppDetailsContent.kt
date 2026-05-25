@@ -1,32 +1,42 @@
 package com.adbstudio.desktop.ui.component
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.adbstudio.desktop.device.PackageContextAction
 import com.adbstudio.desktop.device.PackageInfo
+import com.adbstudio.desktop.device.PermissionInfo
+
+private enum class AppDetailTab(val label: String) {
+    Basic("Basic"),
+    Components("Components"),
+    Permissions("Permissions"),
+    Data("Data"),
+    Files("Files"),
+}
 
 @Composable
 fun AppDetailsContent(
@@ -34,12 +44,15 @@ fun AppDetailsContent(
     showBack: Boolean,
     onBack: () -> Unit,
     onAction: (PackageContextAction) -> Unit,
+    onFetchPermissions: suspend (String) -> List<PermissionInfo> = { emptyList() },
+    onGrantPermission: suspend (String, String) -> Unit = { _, _ -> },
+    onRevokePermission: suspend (String, String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
+    var selectedTab by remember { mutableStateOf(AppDetailTab.Basic) }
+
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier.fillMaxSize(),
     ) {
         if (showBack) {
             Row(
@@ -56,98 +69,65 @@ fun AppDetailsContent(
                     )
                 }
                 Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "App Details",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        Text(
-            text = pkg.packageName,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(horizontal = 24.dp),
-        )
-
-        Spacer(Modifier.height(32.dp))
-
-        ActionSection(
-            title = "Actions",
-            actions = listOf(
-                "Open" to PackageContextAction.Open,
-                "Force Stop" to PackageContextAction.ForceStop,
-                "Restart" to PackageContextAction.Restart,
-            ),
-            onAction = onAction,
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        ActionSection(
-            title = "Manage",
-            actions = listOf(
-                "Uninstall" to PackageContextAction.Uninstall,
-                "Clear Data" to PackageContextAction.ClearData,
-                "Enable" to PackageContextAction.Enable,
-                "Disable" to PackageContextAction.Disable,
-            ),
-            onAction = onAction,
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        ActionSection(
-            title = "Info",
-            actions = listOf(
-                "Open App Info" to PackageContextAction.OpenAppInfo,
-                "View at Playstore" to PackageContextAction.ViewAtPlaystore,
-            ),
-            onAction = onAction,
-        )
-    }
-}
-
-@Composable
-private fun ActionSection(
-    title: String,
-    actions: List<Pair<String, PackageContextAction>>,
-    onAction: (PackageContextAction) -> Unit,
-) {
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            actions.forEach { (label, action) ->
-                Button(
-                    onClick = { onAction(action) },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    ),
-                    modifier = Modifier.weight(1f),
-                ) {
+                Column {
                     Text(
-                        text = label,
-                        style = MaterialTheme.typography.labelMedium,
+                        text = pkg.packageName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                     )
                 }
             }
+        }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.Start)
+                .padding(start = 12.dp),
+        ) {
+            SecondaryScrollableTabRow(
+                selectedTabIndex = selectedTab.ordinal,
+                edgePadding = 0.dp,
+                divider = {},
+            ) {
+                AppDetailTab.entries.forEach { tab ->
+                    Tab(
+                        selected = selectedTab == tab,
+                        onClick = { selectedTab = tab },
+                        text = {
+                            Text(
+                                text = tab.label,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        },
+                    )
+                }
+            }
+        }
+
+        when (selectedTab) {
+            AppDetailTab.Basic -> AppDetailsBasicPage(
+                modifier = Modifier.weight(1f),
+            )
+            AppDetailTab.Components -> AppDetailsComponentsPage(
+                modifier = Modifier.weight(1f),
+            )
+            AppDetailTab.Permissions -> AppDetailsPermissionsPage(
+                packageName = pkg.packageName,
+                onFetchPermissions = onFetchPermissions,
+                onGrantPermission = onGrantPermission,
+                onRevokePermission = onRevokePermission,
+                modifier = Modifier.weight(1f),
+            )
+            AppDetailTab.Data -> AppDetailsDataPage(
+                modifier = Modifier.weight(1f),
+            )
+            AppDetailTab.Files -> AppDetailsFilesPage(
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
