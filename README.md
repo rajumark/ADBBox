@@ -9,6 +9,17 @@ This is a Kotlin Multiplatform project targeting Desktop (JVM).
     Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
     folder is the appropriate location.
 
+### Building the Android icon extractor server
+
+App icons are extracted by a lightweight Android server (dex) that runs on-device via `app_process`.
+Rebuild it after modifying `server/src/main/java/com/adbstudio/IconExtractor.java`:
+
+```bash
+cd server && ./build.sh
+```
+
+Requires Android SDK (detected via `ANDROID_HOME` or `~/Library/Android/sdk`).
+
 ### Running the apps
 
 Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:

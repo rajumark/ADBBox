@@ -53,31 +53,21 @@ public class IconExtractor {
     }
 
     private JSONObject extract(String packageName) throws Exception {
-        if (packageManager == null) {
-            initPackageManager();
-        }
+        if (packageManager == null) initPackageManager();
 
         int flags = PackageManager.GET_ACTIVITIES;
-        if (sdkInt >= 28) {
-            flags |= PackageManager.GET_SIGNING_CERTIFICATES;
-        } else {
-            flags |= PackageManager.GET_SIGNATURES;
-        }
+        if (sdkInt >= 28) flags |= PackageManager.GET_SIGNING_CERTIFICATES;
+        else flags |= PackageManager.GET_SIGNATURES;
 
         PackageInfo pkgInfo = (PackageInfo) getPackageInfoMethod.invoke(
             packageManager, packageName, (long) flags, 0);
-
         ApplicationInfo appInfo = pkgInfo.applicationInfo;
         String apkPath = appInfo.sourceDir;
         long apkSize = new File(apkPath).length();
 
         JSONObject info = new JSONObject();
         info.put("packageName", packageName);
-        info.put("versionName", pkgInfo.versionName != null ? pkgInfo.versionName : "");
-        info.put("apkPath", apkPath);
         info.put("apkSize", apkSize);
-        info.put("enabled", appInfo.enabled);
-        info.put("system", (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
 
         String cacheKey = packageName + "." + apkSize;
         String label = packageName;
@@ -86,11 +76,8 @@ public class IconExtractor {
         Resources resources = getResources(apkPath);
 
         if (appInfo.labelRes != 0) {
-            try {
-                label = resources.getString(appInfo.labelRes);
-            } catch (Exception e) {
-                Log.w(TAG, "No label for " + packageName);
-            }
+            try { label = resources.getString(appInfo.labelRes); }
+            catch (Exception e) { Log.w(TAG, "No label for " + packageName); }
         }
 
         if (appInfo.icon != 0) {
@@ -102,11 +89,7 @@ public class IconExtractor {
                     Bitmap bitmap = drawableToBitmap(drawable);
                     byte[] pngData = bitmapToPng(bitmap, 20);
                     FileOutputStream fos = new FileOutputStream(iconFile);
-                    try {
-                        fos.write(pngData);
-                    } finally {
-                        fos.close();
-                    }
+                    try { fos.write(pngData); } finally { fos.close(); }
                 }
             } catch (Exception e) {
                 Log.w(TAG, "No icon for " + packageName);
@@ -121,15 +104,12 @@ public class IconExtractor {
 
     private void initPackageManager() throws Exception {
         sdkInt = Build.VERSION.SDK_INT;
-
         Class<?> smClass = Class.forName("android.os.ServiceManager");
         Method getService = smClass.getMethod("getService", String.class);
         IBinder binder = (IBinder) getService.invoke(null, "package");
-
         Class<?> stubClass = Class.forName("android.content.pm.IPackageManager$Stub");
         Method asInterface = stubClass.getMethod("asInterface", IBinder.class);
         packageManager = asInterface.invoke(null, binder);
-
         getPackageInfoMethod = packageManager.getClass().getMethod(
             "getPackageInfo", String.class, Long.TYPE, Integer.TYPE);
     }
@@ -138,12 +118,10 @@ public class IconExtractor {
         AssetManager assetManager = (AssetManager) AssetManager.class.newInstance();
         Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
         addAssetPath.invoke(assetManager, apkPath);
-
         DisplayMetrics dm = new DisplayMetrics();
         dm.setToDefaults();
         Configuration config = new Configuration();
         config.setToDefaults();
-
         return new Resources(assetManager, dm, config);
     }
 

@@ -10,7 +10,7 @@ class AppIconServiceTest {
 
     @Test
     fun `parse extractor output with valid JSON`() {
-        val output = """{"packageInfos":[{"packageName":"com.example.app","label":"My App","iconCachePath":"/data/local/tmp/adbstudio/icons/com.example.app.123.png","apkPath":"/data/app/com.example.app/base.apk","apkSize":123456,"enabled":true,"system":false,"versionName":"1.0"},{"packageName":"com.example.other","label":"Other","iconCachePath":"","apkPath":"/data/app/com.example.other/base.apk","apkSize":78901,"enabled":false,"system":true,"versionName":"2.0"}]}"""
+        val output = """{"packageInfos":[{"packageName":"com.example.app","label":"My App","iconCachePath":"/data/local/tmp/adbstudio/icons/com.example.app.123.png","apkSize":123456,"enabled":true,"system":false,"versionName":"1.0"},{"packageName":"com.example.other","label":"Other","iconCachePath":"","apkSize":78901,"enabled":false,"system":true,"versionName":"2.0"}]}"""
 
         val service = AppIconService("/fake/adb", "/tmp/adbstudio-test")
         val result = service.parseExtractorOutput(output)
@@ -22,9 +22,6 @@ class AppIconServiceTest {
             assertEquals("My App", label)
             assertEquals("/data/local/tmp/adbstudio/icons/com.example.app.123.png", iconCachePath)
             assertEquals(123456L, apkSize)
-            assertEquals(true, enabled)
-            assertEquals(false, system)
-            assertEquals("1.0", versionName)
         }
 
         with(result[1]) {
@@ -32,9 +29,6 @@ class AppIconServiceTest {
             assertEquals("Other", label)
             assertEquals("", iconCachePath)
             assertEquals(78901L, apkSize)
-            assertEquals(false, enabled)
-            assertEquals(true, system)
-            assertEquals("2.0", versionName)
         }
     }
 
@@ -48,7 +42,7 @@ class AppIconServiceTest {
 
     @Test
     fun `parse extractor output with special characters in label`() {
-        val output = """{"packageInfos":[{"packageName":"com.example.app","label":"My Cool App!","iconCachePath":"/path/icon.png","apkPath":"/apk","apkSize":100,"enabled":true,"system":false,"versionName":"1.0"}]}"""
+        val output = """{"packageInfos":[{"packageName":"com.example.app","label":"My Cool App!","iconCachePath":"/path/icon.png","apkSize":100}]}"""
         val service = AppIconService("/fake/adb", "/tmp/adbstudio-test3")
         val result = service.parseExtractorOutput(output)
         assertEquals(1, result.size)
@@ -65,49 +59,34 @@ class AppIconServiceTest {
         assertEquals("com.example.app", result[0].label)
         assertEquals("", result[0].iconCachePath)
         assertEquals(0, result[0].apkSize)
-        assertEquals(true, result[0].enabled)
-        assertEquals(false, result[0].system)
-        assertEquals("", result[0].versionName)
     }
 
     @Test
     fun `parse single entry`() {
         val service = AppIconService("/fake/adb", "/tmp/adbstudio-test5")
-        val json = """{"packageName":"com.test.app","label":"Test App","iconCachePath":"/cache/test.png","apkPath":"/apk/test.apk","apkSize":5000,"enabled":true,"system":false,"versionName":"3.0"}"""
+        val json = """{"packageName":"com.test.app","label":"Test App","iconCachePath":"/cache/test.png","apkSize":5000}"""
         val result = service.parseEntry(json)
         assertNotNull(result)
         assertEquals("com.test.app", result.packageName)
         assertEquals("Test App", result.label)
         assertEquals("/cache/test.png", result.iconCachePath)
         assertEquals(5000L, result.apkSize)
-        assertEquals(true, result.enabled)
-        assertEquals(false, result.system)
-        assertEquals("3.0", result.versionName)
     }
 
     @Test
     fun `extract json string`() {
         val service = AppIconService("/fake/adb", "/tmp/adbstudio-test6")
-        assertEquals("Hello", service.extractJsonString("""{"name":"Hello"}""", "name"))
-        assertEquals("test.value", service.extractJsonString("""{"k":"test.value"}""", "k"))
-        assertEquals(null, service.extractJsonString("""{"other":"val"}""", "missing"))
+        assertEquals("Hello", service.extractString("""{"name":"Hello"}""", "name"))
+        assertEquals("test.value", service.extractString("""{"k":"test.value"}""", "k"))
+        assertEquals(null, service.extractString("""{"other":"val"}""", "missing"))
     }
 
     @Test
     fun `extract json long`() {
         val service = AppIconService("/fake/adb", "/tmp/adbstudio-test7")
-        assertEquals(12345L, service.extractJsonLong("""{"size":12345}""", "size"))
-        assertEquals(0L, service.extractJsonLong("""{"size":0}""", "size"))
-        assertEquals(null, service.extractJsonLong("""{"other":"val"}""", "missing"))
-    }
-
-    @Test
-    fun `extract json boolean`() {
-        val service = AppIconService("/fake/adb", "/tmp/adbstudio-test8")
-        assertEquals(true, service.extractJsonBoolean("""{"flag":true}""", "flag"))
-        assertEquals(false, service.extractJsonBoolean("""{"flag":false}""", "flag"))
-        assertEquals(null, service.extractJsonBoolean("""{"flag":0}""", "flag"))
-        assertEquals(null, service.extractJsonBoolean("""{"other":"val"}""", "missing"))
+        assertEquals(12345L, service.extractLong("""{"size":12345}""", "size"))
+        assertEquals(0L, service.extractLong("""{"size":0}""", "size"))
+        assertEquals(null, service.extractLong("""{"other":"val"}""", "missing"))
     }
 
     @Test

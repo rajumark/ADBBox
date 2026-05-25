@@ -136,13 +136,41 @@ fun main() = application {
 
         LaunchedEffect(navigationItem, deviceManager.selectedDeviceId, packageFilter) {
             val deviceId = deviceManager.selectedDeviceId
-            if (deviceId != null) {
-                packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
-                if (navigationItem == NavigationItem.Apps) {
-                    selectedPackage = null
-                    while (true) {
-                        delay(5000)
-                        packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
+            if (deviceId != null && navigationItem == NavigationItem.Apps) {
+                selectedPackage = null
+
+                // Step 1: instant ADB package list
+                packageManager.refresh(deviceId, packageFilter)
+
+                // Step 2: apply cached labels/icons from disk (instant)
+                val cache = iconService.loadCache(deviceId)
+                packageManager.mergeLabels(cache.labels)
+                packageManager.mergeIcons(cache.icons)
+
+                // Step 3: background fetch for uncached packages
+                val allPkgs = packageManager.packages.map { it.packageName }
+                launch {
+                    iconService.fetchAndCache(deviceId, allPkgs)
+                    val fresh = iconService.loadCache(deviceId)
+                    packageManager.mergeLabels(fresh.labels)
+                    packageManager.mergeIcons(fresh.icons)
+                }
+
+                // Step 4: periodic refresh (lightweight)
+                while (true) {
+                    delay(5000)
+                    packageManager.refresh(deviceId, packageFilter)
+                    // apply cached labels/icons to any new packages
+                    val current = iconService.loadCache(deviceId)
+                    packageManager.mergeLabels(current.labels)
+                    packageManager.mergeIcons(current.icons)
+                    // background fetch for new uncached packages
+                    val pkgs = packageManager.packages.map { it.packageName }
+                    launch {
+                        iconService.fetchAndCache(deviceId, pkgs)
+                        val refreshed = iconService.loadCache(deviceId)
+                        packageManager.mergeLabels(refreshed.labels)
+                        packageManager.mergeIcons(refreshed.icons)
                     }
                 }
             }
@@ -298,7 +326,10 @@ fun main() = application {
                     runAdbAction(adbManager.adbPath, deviceId, action, packageName)
                     if (action in setOf(PackageContextAction.Uninstall, PackageContextAction.Enable, PackageContextAction.Disable)) {
                         scope.launch {
-                            packageManager.refreshWithIcons(deviceId, packageFilter, iconService)
+                            packageManager.refresh(deviceId, packageFilter)
+                            val cache = iconService.loadCache(deviceId)
+                            packageManager.mergeLabels(cache.labels)
+                            packageManager.mergeIcons(cache.icons)
                         }
                     }
                 },
