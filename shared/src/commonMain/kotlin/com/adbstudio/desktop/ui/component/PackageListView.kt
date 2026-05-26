@@ -312,7 +312,7 @@ fun PackageListView(
                                 Image(
                                     painter = batchIconPainter,
                                     contentDescription = pkg.label,
-                                    modifier = Modifier.size(20.dp).padding(end = 6.dp),
+                                    modifier = Modifier                                .size(28.dp).padding(end = 6.dp),
                                 )
                             }
                             Text(
@@ -414,10 +414,10 @@ private fun PackageListItem(
                 Image(
                     painter = iconPainter,
                     contentDescription = pkg.label,
-                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                    modifier = Modifier.size(32.dp).padding(end = 8.dp),
                 )
             } else {
-                Spacer(Modifier.size(24.dp).padding(end = 8.dp))
+                Spacer(Modifier.size(32.dp).padding(end = 8.dp))
             }
 
             Column(modifier = Modifier.weight(1f)) {
