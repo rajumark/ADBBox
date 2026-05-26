@@ -438,9 +438,9 @@ private fun PackageListItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = if (isFocused) {
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                     },
                 )
             }
