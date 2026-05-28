@@ -29,6 +29,8 @@ import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
 import com.adbstudio.desktop.feature.contacts.presentation.ContactsViewModel
 import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
 import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
+import com.adbstudio.desktop.feature.messages.presentation.MessagesViewModel
+import com.adbstudio.desktop.feature.notification.presentation.NotificationViewModel
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import org.koin.compose.koinInject
@@ -75,6 +77,7 @@ fun main() = application {
         val contactsViewModel = koinInject<ContactsViewModel>()
         val lifecycleViewModel = koinInject<LifecycleViewModel>()
         val mediaViewModel = koinInject<MediaViewModel>()
+        val notificationViewModel = koinInject<NotificationViewModel>()
 
         DisposableEffect(Unit) {
             deviceRepository.start(appScope)
@@ -86,6 +89,7 @@ fun main() = application {
                 contactsViewModel.close()
                 lifecycleViewModel.close()
                 mediaViewModel.close()
+                notificationViewModel.close()
             }
         }
 
@@ -171,6 +175,7 @@ private fun MenuBarScope.NavigationMenu(
         Item("Calendar") { onSelect(NavigationItem.Calendar) }
         Item("Contacts") { onSelect(NavigationItem.Contacts) }
         Item("Media") { onSelect(NavigationItem.Media) }
+        Item("Notifications") { onSelect(NavigationItem.Notifications) }
         Item("Lifecycle") { onSelect(NavigationItem.Lifecycle) }
         Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }

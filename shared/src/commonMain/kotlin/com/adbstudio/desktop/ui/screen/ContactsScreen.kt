@@ -132,7 +132,7 @@ private fun ContactsListPanel(
                                 .size(32.dp)
                                 .background(
                                     MaterialTheme.colorScheme.primaryContainer,
-                                    shape = MaterialTheme.shapes.circle,
+                                    shape = CircleShape,
                                 )
                                 .wrapContentSize(align = Alignment.Center),
                         ) {

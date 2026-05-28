@@ -14,8 +14,11 @@ import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
 import com.adbstudio.desktop.feature.settings.presentation.SettingsViewModel
 import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
 import com.adbstudio.desktop.feature.contacts.presentation.ContactsViewModel
+import com.adbstudio.desktop.feature.inspector.presentation.UiInspectorViewModel
 import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
 import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
+import com.adbstudio.desktop.feature.messages.presentation.MessagesViewModel
+import com.adbstudio.desktop.feature.notification.presentation.NotificationViewModel
 import com.adbstudio.desktop.ui.screen.AppsScreen
 import com.adbstudio.desktop.ui.screen.BatteryScreen
 import com.adbstudio.desktop.ui.screen.CalendarScreen
@@ -24,6 +27,8 @@ import com.adbstudio.desktop.ui.screen.DebugInfoScreen
 import com.adbstudio.desktop.ui.screen.DevicesPage
 import com.adbstudio.desktop.ui.screen.LifecycleScreen
 import com.adbstudio.desktop.ui.screen.MediaScreen
+import com.adbstudio.desktop.ui.screen.MessagesScreen
+import com.adbstudio.desktop.ui.screen.NotificationScreen
 import com.adbstudio.desktop.ui.screen.SettingsScreen
 import com.adbstudio.desktop.ui.screen.UiInspectorScreen
 import org.koin.compose.koinInject
@@ -41,6 +46,9 @@ fun App(
     contactsViewModel: ContactsViewModel = koinInject(),
     lifecycleViewModel: LifecycleViewModel = koinInject(),
     mediaViewModel: MediaViewModel = koinInject(),
+    messagesViewModel: MessagesViewModel = koinInject(),
+    notificationViewModel: NotificationViewModel = koinInject(),
+    uiInspectorViewModel: UiInspectorViewModel = koinInject(),
 ) {
     AdbStudioTheme(themeMode = themeMode) {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -50,10 +58,12 @@ fun App(
                 NavigationItem.Battery -> BatteryScreen(viewModel = batteryViewModel)
                 NavigationItem.DebugInfo -> DebugInfoScreen(adbManager = adbManager)
                 NavigationItem.Settings -> SettingsScreen(viewModel = settingsViewModel)
-                NavigationItem.UiInspector -> UiInspectorScreen()
+                NavigationItem.UiInspector -> UiInspectorScreen(viewModel = uiInspectorViewModel)
                 NavigationItem.Calendar -> CalendarScreen(viewModel = calendarViewModel)
                 NavigationItem.Contacts -> ContactsScreen(viewModel = contactsViewModel)
                 NavigationItem.Media -> MediaScreen(viewModel = mediaViewModel)
+                NavigationItem.Messages -> MessagesScreen(viewModel = messagesViewModel)
+                NavigationItem.Notifications -> NotificationScreen(viewModel = notificationViewModel)
                 NavigationItem.Lifecycle -> LifecycleScreen(viewModel = lifecycleViewModel)
             }
         }

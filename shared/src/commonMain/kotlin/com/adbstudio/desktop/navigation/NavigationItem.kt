@@ -13,5 +13,7 @@ enum class NavigationItem(
     Calendar("Calendar"),
     Contacts("Contacts"),
     Media("Media"),
+    Messages("Messages"),
+    Notifications("Notifications"),
     Lifecycle("Lifecycle"),
 }

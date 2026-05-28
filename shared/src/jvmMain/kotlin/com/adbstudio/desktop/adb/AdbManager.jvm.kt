@@ -3,15 +3,24 @@ package com.adbstudio.desktop.adb
 import com.adbstudio.desktop.adb.model.base.AdbCommand
 import com.adbstudio.desktop.core.error.AppError
 import com.adbstudio.desktop.core.result.AppResult
+import com.adbstudio.desktop.platform.getAppCacheDir
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 import java.util.zip.ZipInputStream
 
 actual class AdbManager {
     actual val adbPath: String
     actual val isReady: Boolean
+
+    /** Default timeout for ADB commands. */
+    private val defaultTimeoutMs: Long = 15_000
 
     init {
         val os = detectOs()
@@ -29,8 +38,30 @@ actual class AdbManager {
             return@withContext AppResult.Error(AppError.AdbNotReady(adbPath))
         }
         try {
-            val output = runAdb(command.toCliArgs())
-            AppResult.Success(command.parse(output))
+            withTimeout(defaultTimeoutMs) {
+                val process = ProcessBuilder(listOf(adbPath) + command.toCliArgs())
+                    .redirectErrorStream(true)
+                    .start()
+
+                try {
+                    val output = process.inputStream.bufferedReader().readText()
+                    try {
+                        process.waitFor()
+                    } catch (_: Exception) {
+                    }
+                    currentCoroutineContext().ensureActive()
+                    AppResult.Success(command.parse(output))
+                } finally {
+                    process.destroyForcibly()
+                }
+            }
+        } catch (t: TimeoutCancellationException) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = command.id,
+                    details = "Command timed out after ${defaultTimeoutMs}ms",
+                ),
+            )
         } catch (t: Throwable) {
             AppResult.Error(
                 AppError.AdbCommandFailed(
@@ -38,6 +69,121 @@ actual class AdbManager {
                     details = t.message ?: t.toString(),
                 ),
             )
+        }
+    }
+
+    actual suspend fun runShell(serial: String?, command: String): AppResult<String> = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) {
+            return@withContext AppResult.Error(AppError.AdbNotReady(adbPath))
+        }
+        try {
+            withTimeout(defaultTimeoutMs) {
+                val args = buildList {
+                    if (!serial.isNullOrBlank()) {
+                        add("-s")
+                        add(serial)
+                    }
+                    add("shell")
+                    add(command)
+                }
+                val process = ProcessBuilder(listOf(adbPath) + args)
+                    .redirectErrorStream(true)
+                    .start()
+
+                try {
+                    val output = process.inputStream.bufferedReader().readText()
+                    try {
+                        process.waitFor()
+                    } catch (_: Exception) {
+                    }
+                    currentCoroutineContext().ensureActive()
+                    AppResult.Success(output)
+                } finally {
+                    process.destroyForcibly()
+                }
+            }
+        } catch (t: TimeoutCancellationException) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = "shell",
+                    details = "Command timed out after ${defaultTimeoutMs}ms",
+                ),
+            )
+        } catch (t: Throwable) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = "shell",
+                    details = t.message ?: t.toString(),
+                ),
+            )
+        }
+    }
+
+    actual suspend fun pullFile(serial: String?, remotePath: String): AppResult<ByteArray> = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) {
+            return@withContext AppResult.Error(AppError.AdbNotReady(adbPath))
+        }
+        val cacheDir = File(getAppCacheDir())
+        val tempFile = File(cacheDir, "pull_${UUID.randomUUID()}.tmp")
+        // File transfers may take longer — 60s timeout
+        val pullTimeoutMs: Long = 60_000
+        try {
+            withTimeout(pullTimeoutMs) {
+                val args = buildList {
+                    if (!serial.isNullOrBlank()) {
+                        add("-s")
+                        add(serial)
+                    }
+                    add("pull")
+                    add(remotePath)
+                    add(tempFile.absolutePath)
+                }
+                val process = ProcessBuilder(listOf(adbPath) + args)
+                    .redirectErrorStream(true)
+                    .start()
+
+                try {
+                    val output = process.inputStream.bufferedReader().readText()
+                    val exitCode = process.waitFor()
+                    if (exitCode != 0) {
+                        return@withTimeout AppResult.Error(
+                            AppError.AdbCommandFailed(
+                                command = "pull",
+                                details = "Exit code $exitCode: $output",
+                            ),
+                        )
+                    }
+                    if (!tempFile.exists()) {
+                        return@withTimeout AppResult.Error(
+                            AppError.AdbCommandFailed(
+                                command = "pull",
+                                details = "Pulled file not found at ${tempFile.absolutePath}",
+                            ),
+                        )
+                    }
+                    currentCoroutineContext().ensureActive()
+                    val bytes = tempFile.readBytes()
+                    AppResult.Success(bytes)
+                } finally {
+                    process.destroyForcibly()
+                }
+            }
+        } catch (t: TimeoutCancellationException) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = "pull",
+                    details = "Pull timed out after ${pullTimeoutMs}ms",
+                ),
+            )
+        } catch (t: Throwable) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = "pull",
+                    details = t.message ?: t.toString(),
+                ),
+            )
+        } finally {
+            tempFile.delete()
         }
     }
 

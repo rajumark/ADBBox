@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -72,7 +71,7 @@ fun LifecycleScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -81,7 +80,7 @@ fun LifecycleScreen(
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         Text(text = "${log.time ?: ""} - ${log.type ?: ""}", style = MaterialTheme.typography.titleSmall)
                         Text(text = "Package: ${log.packageName ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
-                        Text(text = "Class: ${log.className ?: "N/A"}", style = Modifier.padding(bottom = 8.dp), style = MaterialTheme.typography.bodySmall)
+                        Text(text = "Class: ${log.className ?: "N/A"}", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }

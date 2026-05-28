@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -83,7 +82,7 @@ fun CommanderDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.3f))
+            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.3f))
             .onKeyEvent { event ->
                 if (event.type == KeyEventType.KeyUp) {
                     when (event.key) {
@@ -121,7 +120,7 @@ fun CommanderDialog(
             modifier = Modifier
                 .width(520.dp)
                 .heightIn(max = 480.dp),
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             shadowElevation = 8.dp,
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 4.dp,
@@ -142,7 +141,7 @@ fun CommanderDialog(
                         focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = MaterialTheme.shapes.small,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Search,
                     ),
@@ -214,7 +213,7 @@ private fun CommanderActionItem(
         MaterialTheme.colorScheme.onSurface
     }
 
-    val shape = RoundedCornerShape(8.dp)
+    val shape = MaterialTheme.shapes.small
 
     Row(
         modifier = modifier

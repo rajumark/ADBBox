@@ -1,6 +1,6 @@
 # ADBStudio — Project Rules & Architecture
 
-> Rules for a 1000+ command, 400+ screen Compose Desktop ADB tool. M3 UI rules in §16.
+> Rules for a 1000+ command, 400+ screen Compose Desktop ADB tool. M3 UI rules in §20.
 
 ---
 
@@ -192,6 +192,7 @@ val logLines: Flow<List<LogLine>>           // high-frequency stream, collected 
 - Allowed in ViewModels **if** mutations are confined to `Dispatchers.Main.immediate`.
 - For background/asynchronous state generation, use `MutableStateFlow` and update safely.
 - In composables: OK for trivial UI-local state (text input, scroll pos, expanded sections).
+- At window scope (top-level state): OK — see §17 for desktop window state pattern.
 
 ```kotlin
 // Feature pattern
@@ -393,7 +394,8 @@ val sharedModules = listOf(
 
 **Rules:**
 - `single` for stateless services (executors, repositories, session caches).
-- `factory` for ViewModels (one per feature scope, not per screen instance).
+- `single` for ViewModels — feature-scoped VMs outlive individual screen composables in desktop docking/tab environments. See §15 for lifecycle pattern.
+- `factory` only for truly transient objects (one-shot dialogs, ephemeral helpers).
 - No `CompositionLocal` for business logic — only for UI-level ambient state (theme).
 - Modules are composed at application entry point, not scattered.
 
@@ -471,7 +473,108 @@ Structure every feature as if it were a plugin. This enables feature isolation, 
 
 ---
 
-## 15. What To Avoid
+## 15. ViewModel Lifecycle & Scope (Desktop-Specific)
+
+ViewModels in Compose Desktop don't have Android's `ViewModel` class. Manage scope explicitly:
+
+**Pattern:**
+```kotlin
+class FeatureViewModel(
+    private val adbManager: AdbManager,
+    private val deviceRepository: DeviceRepository,
+) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    private val _state = MutableStateFlow(FeatureUiState())
+    val state: StateFlow<FeatureUiState> = _state.asStateFlow()
+
+    fun onEvent(event: FeatureEvent) { ... }
+
+    /** MUST be called on app dispose — cancels all coroutines. */
+    fun close() { scope.cancel() }
+}
+```
+
+**Rules:**
+- Use `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)` — never `viewModelScope` (doesn't exist outside Android).
+- Expose `fun close()` to cancel scope. Call from `DisposableEffect.onDispose` at app root.
+- `SupervisorJob` prevents one failed child from cancelling siblings.
+- `Dispatchers.Main.immediate` for state updates — safe because Compose Desktop runs on Swing EDT.
+
+**Koin registration:**
+- Use `single` for ViewModels (not `factory`). Rationale: feature-scoped VMs outlive individual screen composables in a desktop docking/tab environment. `factory` would create new instances on every `koinInject()`.
+- Exception: truly transient screens (e.g., a one-shot dialog) may use `factory`.
+
+---
+
+## 16. Structured Logging (Hard Requirement)
+
+Every ADB operation, error, and significant state change must emit structured logs.
+
+```kotlin
+interface AppLogger {
+    fun info(event: String, params: Map<String, Any> = emptyMap())
+    fun warn(event: String, params: Map<String, Any> = emptyMap())
+    fun error(event: String, params: Map<String, Any> = emptyMap(), throwable: Throwable? = null)
+}
+```
+
+**Required events:**
+| Event | When |
+|-------|------|
+| `adb_command_executed` | Every `AdbManager.run()` — include serial, command id, durationMs, success |
+| `adb_command_failed` | Command returns `AppResult.Error` — include error details |
+| `device_connected` | New device appears in `adb devices` |
+| `device_disconnected` | Device drops from list |
+| `device_selected` | User switches active device |
+| `feature_screen_opened` | Navigation to any screen |
+| `task_started` / `task_completed` / `task_failed` | TaskManager lifecycle |
+
+**Rules:**
+- Include correlation ID per operation (UUID or timestamp-based).
+- Log at point of origin (AdbManager, DeviceRepository, ViewModel).
+- Never log secrets, tokens, or full file paths with user data.
+
+---
+
+## 17. Desktop Window & Top-Level State
+
+Compose Desktop has no Activity lifecycle. Top-level state lives in `main()`.
+
+**Pattern:**
+```kotlin
+fun main() = application {
+    startKoin { modules(appModules) }
+
+    var themeMode by remember { mutableStateOf(ThemeMode.System) }
+    var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
+
+    // ... Window, MenuBar, content
+}
+```
+
+**Rules:**
+- `mutableStateOf` at window scope is allowed — mutations happen on Swing EDT (main thread).
+- Navigation state (`NavigationItem`) and theme state are owned by `main()`, not injected.
+- `DisposableEffect(Unit)` at window scope for starting/stopping repositories and cancelling VM scopes.
+- Koin `startKoin` must be called once in `main()`, not inside composables.
+
+---
+
+## 18. Command Palette / Commander
+
+The Commander (⌘⇧ double-shift) is a cross-cutting UI concern, not a feature.
+
+**Rules:**
+- `CommanderRegistry` is a `single` in Koin — holds all registered actions.
+- Actions registered at startup in `LaunchedEffect(Unit)` within `main()`.
+- Each feature can register its own actions via the registry.
+- `CommanderDialog` is a pure composable — receives registry, emits action selections.
+- No business logic in CommanderDialog — only filtering and selection.
+
+---
+
+## 19. What To Avoid
 
 | Anti-pattern | Instead |
 |-------------|---------|
@@ -486,17 +589,17 @@ Structure every feature as if it were a plugin. This enables feature isolation, 
 
 ---
 
-## 16. UI Rules — Material Design 3 (Tooling-Grade)
+## 20. UI Rules — Material Design 3 (Tooling-Grade)
 
 ### Philosophy
 **M3 is the foundation, not a prison.** This is a power-user desktop tool (like Android Studio, IntelliJ, Wireshark), not a consumer mobile app. Use M3 defaults for standard chrome, but allow custom composables where M3 is insufficient for desktop tooling.
 
-### 16.1 Standard UI (M3 defaults required)
+### 20.1 Standard UI (M3 defaults required)
 - Buttons, text fields, dialogs, top bars, navigation bars, switches, sliders
 - Color scheme (`MaterialTheme.colorScheme.*`), typography scale (`MaterialTheme.typography.*`), shape system
 - Icons (material-icons-extended)
 
-### 16.2 Custom Composables (Allowed Where Needed)
+### 20.2 Custom Composables (Allowed Where Needed)
 Allowed for tooling-specific needs: data tables, dense log viewers, terminal output, split panes, tree explorers, property inspectors, device dashboards, virtualized lists, resizable panels, dockable windows, tab groups.
 
 **Rules for custom composables:**
@@ -506,14 +609,14 @@ Allowed for tooling-specific needs: data tables, dense log viewers, terminal out
 - Never hardcode `dp` values outside the M3 spacing scale (`4, 8, 12, 16, 24`).
 - Wrapping M3 components for ergonomics is OK — no styling overrides in the wrapper.
 
-### 16.3 Naming
+### 20.3 Naming
 - **Files**: `PascalCase.kt` matching primary class/composable.
 - **Composables**: PascalCase, noun-based.
 - **Functions**: camelCase, verb-based.
 - **ViewModels**: `*ViewModel.kt`, expose `StateFlow` / `MutableStateFlow`.
 - **Screens**: `*Screen.kt` — full-page or panel view composable.
 
-### 16.4 UX Rules
+### 20.4 UX Rules
 - Use `Scaffold` with `TopAppBar` for primary screens. Panels/inspectors may opt out.
 - Navigation: state-driven (no 3rd-party nav libs).
 - Dialogs: prefer M3 `AlertDialog` — custom dialogs allowed for complex tooling UIs.
@@ -522,7 +625,7 @@ Allowed for tooling-specific needs: data tables, dense log viewers, terminal out
 - Error states: dialog or inline text with `color = MaterialTheme.colorScheme.error`.
 - Confirm destructive actions.
 
-### 16.5 Code Conventions
+### 20.5 Code Conventions
 - No HTML-like comments (`//` or `/* */` only where necessary).
 - No `@Preview` in production code.
 - `remember` / `derivedStateOf` for local state; `collectAsState()` for ViewModel state.
@@ -530,13 +633,13 @@ Allowed for tooling-specific needs: data tables, dense log viewers, terminal out
 - `withContext(Dispatchers.IO)` for blocking ADB operations.
 - Explicit M3 imports — no wildcard imports except `compose.material3.*`.
 
-### 16.6 ADB-Specific Conventions
+### 20.6 ADB-Specific Conventions
 - All ADB shell commands through a single abstraction in `adb/`.
 - Device connection state via `StateFlow` in `DeviceViewModel`.
 - Logcat in `LazyColumn` with `reverseLayout = true` — M3 text styling for consistency.
 - Device list uses `LazyColumn` with M3 `ListItem` or `Card`.
 
-### 16.7 What We Do NOT Do
+### 20.7 What We Do NOT Do
 
 | Disallowed | Instead Use |
 |---|---|

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -47,7 +46,7 @@ fun DebugInfoScreen(adbManager: AdbManager) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceVariant,
             tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth(),
@@ -80,7 +79,7 @@ fun DebugInfoScreen(adbManager: AdbManager) {
                             clipboardManager.setText(AnnotatedString(adbManager.adbPath))
                             copied = true
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = MaterialTheme.shapes.small,
                         contentPadding = ButtonDefaults.TextButtonContentPadding,
                     ) {
                         Text(text = if (copied) "Copied!" else "Copy")
@@ -92,7 +91,7 @@ fun DebugInfoScreen(adbManager: AdbManager) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceVariant,
             tonalElevation = 2.dp,
             modifier = Modifier.fillMaxWidth(),
