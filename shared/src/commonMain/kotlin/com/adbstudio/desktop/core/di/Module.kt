@@ -48,6 +48,15 @@ val contactsModule = module {
     single { ContactsViewModel(get(), get()) }
 }
 
+val lifecycleModule = module {
+    single { LifecycleViewModel(get(), get()) }
+}
+
+val mediaModule = module {
+    single { MediaRepository(get()) }
+    single { MediaViewModel(get(), get()) }
+}
+
 val appModules = listOf(
     coreModule,
     adbModule,
@@ -57,4 +66,6 @@ val appModules = listOf(
     settingsModule,
     calendarModule,
     contactsModule,
+    lifecycleModule,
+    mediaModule,
 )

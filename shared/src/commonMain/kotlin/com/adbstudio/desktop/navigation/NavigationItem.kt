@@ -12,4 +12,6 @@ enum class NavigationItem(
     UiInspector("UI Inspector"),
     Calendar("Calendar"),
     Contacts("Contacts"),
+    Media("Media"),
+    Lifecycle("Lifecycle"),
 }

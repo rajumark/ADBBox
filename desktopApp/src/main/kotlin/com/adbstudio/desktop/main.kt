@@ -26,6 +26,8 @@ import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.feature.apps.presentation.AppsViewModel
 import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
 import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
+import com.adbstudio.desktop.feature.contacts.presentation.ContactsViewModel
+import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
 import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
@@ -70,6 +72,8 @@ fun main() = application {
         val appsViewModel = koinInject<AppsViewModel>()
         val batteryViewModel = koinInject<BatteryViewModel>()
         val calendarViewModel = koinInject<CalendarViewModel>()
+        val contactsViewModel = koinInject<ContactsViewModel>()
+        val lifecycleViewModel = koinInject<LifecycleViewModel>()
         val mediaViewModel = koinInject<MediaViewModel>()
 
         DisposableEffect(Unit) {
@@ -79,6 +83,8 @@ fun main() = application {
                 appsViewModel.close()
                 batteryViewModel.close()
                 calendarViewModel.close()
+                contactsViewModel.close()
+                lifecycleViewModel.close()
                 mediaViewModel.close()
             }
         }
@@ -145,6 +151,8 @@ fun main() = application {
                 appsViewModel = appsViewModel,
                 batteryViewModel = batteryViewModel,
                 calendarViewModel = calendarViewModel,
+                contactsViewModel = contactsViewModel,
+                lifecycleViewModel = lifecycleViewModel,
                 mediaViewModel = mediaViewModel,
             )
         }
@@ -161,7 +169,9 @@ private fun MenuBarScope.NavigationMenu(
         Item("Apps") { onSelect(NavigationItem.Apps) }
         Item("Battery") { onSelect(NavigationItem.Battery) }
         Item("Calendar") { onSelect(NavigationItem.Calendar) }
+        Item("Contacts") { onSelect(NavigationItem.Contacts) }
         Item("Media") { onSelect(NavigationItem.Media) }
+        Item("Lifecycle") { onSelect(NavigationItem.Lifecycle) }
         Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }
         Item("UI Inspector") { onSelect(NavigationItem.UiInspector) }

@@ -14,12 +14,16 @@ import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
 import com.adbstudio.desktop.feature.settings.presentation.SettingsViewModel
 import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
 import com.adbstudio.desktop.feature.contacts.presentation.ContactsViewModel
+import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
+import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
 import com.adbstudio.desktop.ui.screen.AppsScreen
 import com.adbstudio.desktop.ui.screen.BatteryScreen
 import com.adbstudio.desktop.ui.screen.CalendarScreen
 import com.adbstudio.desktop.ui.screen.ContactsScreen
 import com.adbstudio.desktop.ui.screen.DebugInfoScreen
 import com.adbstudio.desktop.ui.screen.DevicesPage
+import com.adbstudio.desktop.ui.screen.LifecycleScreen
+import com.adbstudio.desktop.ui.screen.MediaScreen
 import com.adbstudio.desktop.ui.screen.SettingsScreen
 import com.adbstudio.desktop.ui.screen.UiInspectorScreen
 import org.koin.compose.koinInject
@@ -49,6 +53,8 @@ fun App(
                 NavigationItem.UiInspector -> UiInspectorScreen()
                 NavigationItem.Calendar -> CalendarScreen(viewModel = calendarViewModel)
                 NavigationItem.Contacts -> ContactsScreen(viewModel = contactsViewModel)
+                NavigationItem.Media -> MediaScreen(viewModel = mediaViewModel)
+                NavigationItem.Lifecycle -> LifecycleScreen(viewModel = lifecycleViewModel)
             }
         }
     }
