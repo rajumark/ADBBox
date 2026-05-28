@@ -8,8 +8,10 @@ import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.AdbStudioTheme
 import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.adb.AdbManager
+import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.ui.screen.AppsScreen
 import com.adbstudio.desktop.ui.screen.DebugInfoScreen
+import com.adbstudio.desktop.ui.screen.DevicesPage
 import com.adbstudio.desktop.ui.screen.SettingsScreen
 import com.adbstudio.desktop.ui.screen.UiInspectorScreen
 
@@ -18,10 +20,12 @@ fun App(
     themeMode: ThemeMode,
     navigationItem: NavigationItem,
     adbManager: AdbManager,
+    deviceRepository: DeviceRepository,
 ) {
     AdbStudioTheme(themeMode = themeMode) {
         Surface(modifier = Modifier.fillMaxSize()) {
             when (navigationItem) {
+                NavigationItem.Devices -> DevicesPage(deviceRepository = deviceRepository)
                 NavigationItem.Apps -> AppsScreen(adbManager = adbManager)
                 NavigationItem.DebugInfo -> DebugInfoScreen(adbManager = adbManager)
                 NavigationItem.Settings -> SettingsScreen()

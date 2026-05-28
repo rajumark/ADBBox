@@ -2,9 +2,11 @@ package com.adbstudio.desktop
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -18,6 +20,8 @@ import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
+import com.adbstudio.desktop.core.events.SimpleEventBus
+import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import kotlin.time.TimeSource
@@ -50,6 +54,12 @@ fun main() = application {
         var themeMode by remember { mutableStateOf(ThemeMode.System) }
         var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
         val commanderRegistry = remember { CommanderRegistry() }
+        val eventBus = remember { SimpleEventBus() }
+        val deviceRepository = remember { DeviceRepository(adbManager = adbManager, eventBus = eventBus) }
+
+        LaunchedEffect(Unit) {
+            deviceRepository.start(this)
+        }
 
         LaunchedEffect(Unit) {
             NavigationItem.entries.forEach { item ->
@@ -92,7 +102,7 @@ fun main() = application {
                 current = themeMode,
                 onSelect = { themeMode = it },
             )
-            DeviceMenu()
+            DeviceMenu(deviceRepository = deviceRepository)
             HelpMenu()
         }
 
@@ -109,6 +119,7 @@ fun main() = application {
                 themeMode = themeMode,
                 navigationItem = navigationItem,
                 adbManager = adbManager,
+                deviceRepository = deviceRepository,
             )
         }
     }
@@ -120,6 +131,7 @@ private fun MenuBarScope.NavigationMenu(
     onSelect: (NavigationItem) -> Unit,
 ) {
     Menu("Navigation") {
+        Item("Devices") { onSelect(NavigationItem.Devices) }
         Item("Apps") { onSelect(NavigationItem.Apps) }
         Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }
@@ -140,19 +152,33 @@ private fun MenuBarScope.ThemeMenu(
 }
 
 @Composable
-private fun MenuBarScope.DeviceMenu() {
+private fun MenuBarScope.DeviceMenu(
+    deviceRepository: DeviceRepository,
+) {
+    val scope = rememberCoroutineScope()
+    val state by deviceRepository.state.collectAsState()
+
     Menu("Device") {
-        Item("Connect Device…") { }
-        Item("Disconnect Device") { }
+        if (!state.isAdbReady) {
+            Item("ADB not ready") { }
+            return@Menu
+        }
+
+        if (state.devices.isEmpty()) {
+            Item("No devices") { }
+        } else {
+            state.devices.forEach { device ->
+                val selectedPrefix = if (device.serial == state.selectedSerial) "✓ " else ""
+                Item("$selectedPrefix${device.serial} (${device.state})") {
+                    deviceRepository.selectDevice(device.serial)
+                }
+            }
+        }
+
         Separator()
-        Item("Screen Capture") { }
-        Item("Screen Record") { }
-        Separator()
-        Item("Install APK…") { }
-        Item("Pull File…") { }
-        Item("Push File…") { }
-        Separator()
-        Item("Restart Device") { }
+        Item("Refresh now") {
+            deviceRepository.requestRefresh(scope)
+        }
     }
 }
 

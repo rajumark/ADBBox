@@ -1,5 +1,7 @@
 package com.adbstudio.desktop.adb
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.ZipInputStream
@@ -17,6 +19,42 @@ actual class AdbManager {
         }
         adbPath = adbFile?.absolutePath ?: ""
         isReady = adbFile?.exists() == true && adbFile.canExecute()
+    }
+
+    actual suspend fun listDevices(): List<AdbDevice> = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) return@withContext emptyList()
+
+        val process = ProcessBuilder(listOf(adbPath, "devices"))
+            .redirectErrorStream(true)
+            .start()
+
+        val output = process.inputStream.bufferedReader().readText()
+        // best-effort cleanup; ProcessBuilder usually completes quickly for this command
+        try {
+            process.waitFor()
+        } catch (_: Exception) {
+        }
+
+        parseAdbDevicesOutput(output)
+    }
+
+    private fun parseAdbDevicesOutput(output: String): List<AdbDevice> {
+        // Example:
+        // List of devices attached
+        // emulator-5554	device
+        // R58M1234ABC	unauthorized
+        return output
+            .lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .filterNot { it.startsWith("List of devices attached") }
+            .mapNotNull { line ->
+                val parts = line.split(Regex("\\s+"), limit = 3)
+                val serial = parts.getOrNull(0)?.trim().orEmpty()
+                val state = parts.getOrNull(1)?.trim().orEmpty()
+                if (serial.isBlank() || state.isBlank()) null else AdbDevice(serial = serial, state = state)
+            }
+            .toList()
     }
 
     private fun resolveAdb(os: String, appDir: File): File? {
