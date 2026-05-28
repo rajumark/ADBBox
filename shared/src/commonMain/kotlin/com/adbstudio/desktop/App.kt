@@ -10,6 +10,7 @@ import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.ui.screen.AppsScreen
+import com.adbstudio.desktop.ui.screen.BatteryScreen
 import com.adbstudio.desktop.ui.screen.DebugInfoScreen
 import com.adbstudio.desktop.ui.screen.DevicesPage
 import com.adbstudio.desktop.ui.screen.SettingsScreen
@@ -26,7 +27,8 @@ fun App(
         Surface(modifier = Modifier.fillMaxSize()) {
             when (navigationItem) {
                 NavigationItem.Devices -> DevicesPage(deviceRepository = deviceRepository)
-                NavigationItem.Apps -> AppsScreen(adbManager = adbManager)
+                NavigationItem.Apps -> AppsScreen(adbManager = adbManager, deviceRepository = deviceRepository)
+                NavigationItem.Battery -> BatteryScreen(adbManager = adbManager, deviceRepository = deviceRepository)
                 NavigationItem.DebugInfo -> DebugInfoScreen(adbManager = adbManager)
                 NavigationItem.Settings -> SettingsScreen()
                 NavigationItem.UiInspector -> UiInspectorScreen()

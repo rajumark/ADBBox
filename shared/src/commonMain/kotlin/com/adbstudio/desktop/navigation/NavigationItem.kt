@@ -6,6 +6,7 @@ enum class NavigationItem(
 ) {
     Devices("Devices"),
     Apps("Apps"),
+    Battery("Battery"),
     DebugInfo("Debug Info"),
     Settings("Settings"),
     UiInspector("UI Inspector"),

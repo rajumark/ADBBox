@@ -24,18 +24,57 @@ actual class AdbManager {
     actual suspend fun listDevices(): List<AdbDevice> = withContext(Dispatchers.IO) {
         if (!isReady || adbPath.isBlank()) return@withContext emptyList()
 
-        val process = ProcessBuilder(listOf(adbPath, "devices"))
+        val output = runAdb(listOf("devices"))
+        parseAdbDevicesOutput(output)
+    }
+
+    actual suspend fun listPackages(serial: String?): List<String> = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) return@withContext emptyList()
+
+        val args = buildList {
+            if (!serial.isNullOrBlank()) {
+                add("-s")
+                add(serial)
+            }
+            addAll(listOf("shell", "pm", "list", "packages"))
+        }
+
+        val output = runAdb(args)
+        output
+            .lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .mapNotNull { line ->
+                // "package:com.example.app"
+                if (line.startsWith("package:")) line.removePrefix("package:").trim() else null
+            }
+            .toList()
+    }
+
+    actual suspend fun dumpsysBattery(serial: String?): String = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) return@withContext ""
+
+        val args = buildList {
+            if (!serial.isNullOrBlank()) {
+                add("-s")
+                add(serial)
+            }
+            addAll(listOf("shell", "dumpsys", "battery"))
+        }
+
+        runAdb(args)
+    }
+
+    private fun runAdb(args: List<String>): String {
+        val process = ProcessBuilder(listOf(adbPath) + args)
             .redirectErrorStream(true)
             .start()
-
         val output = process.inputStream.bufferedReader().readText()
-        // best-effort cleanup; ProcessBuilder usually completes quickly for this command
         try {
             process.waitFor()
         } catch (_: Exception) {
         }
-
-        parseAdbDevicesOutput(output)
+        return output
     }
 
     private fun parseAdbDevicesOutput(output: String): List<AdbDevice> {

@@ -133,6 +133,7 @@ private fun MenuBarScope.NavigationMenu(
     Menu("Navigation") {
         Item("Devices") { onSelect(NavigationItem.Devices) }
         Item("Apps") { onSelect(NavigationItem.Apps) }
+        Item("Battery") { onSelect(NavigationItem.Battery) }
         Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }
         Item("UI Inspector") { onSelect(NavigationItem.UiInspector) }

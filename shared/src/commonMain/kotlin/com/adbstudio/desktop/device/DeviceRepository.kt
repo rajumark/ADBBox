@@ -19,7 +19,10 @@ data class DevicesState(
     val isAdbReady: Boolean = false,
     val devices: List<AdbDevice> = emptyList(),
     val selectedSerial: String? = null,
-    val isRefreshing: Boolean = false,
+    /**
+     * Only for user-triggered refresh. Background polling must not toggle UI states (prevents flicker).
+     */
+    val isManualRefreshing: Boolean = false,
     val errorMessage: String? = null,
 )
 
@@ -47,10 +50,10 @@ class DeviceRepository(
         appScope = scope
         pollJob = scope.launch {
             // initial load immediately
-            refreshOnce()
+            refreshOnce(isManual = false)
             while (isActive) {
                 delay(3_000)
-                refreshOnce()
+                refreshOnce(isManual = false)
             }
         }
     }
@@ -75,10 +78,10 @@ class DeviceRepository(
     }
 
     fun requestRefresh(scope: CoroutineScope) {
-        scope.launch { refreshOnce() }
+        scope.launch { refreshOnce(isManual = true) }
     }
 
-    private suspend fun refreshOnce() {
+    private suspend fun refreshOnce(isManual: Boolean) {
         if (!adbManager.isReady) {
             setDevices(
                 isAdbReady = false,
@@ -88,7 +91,12 @@ class DeviceRepository(
             return
         }
 
-        _state.update { it.copy(isAdbReady = true, isRefreshing = true, errorMessage = null) }
+        if (isManual) {
+            _state.update { it.copy(isAdbReady = true, isManualRefreshing = true, errorMessage = null) }
+        } else {
+            // Polling should not clear errors or toggle loading states.
+            _state.update { it.copy(isAdbReady = true) }
+        }
         try {
             val devices = adbManager.listDevices()
             setDevices(isAdbReady = true, devices = devices, errorMessage = null)
@@ -99,7 +107,9 @@ class DeviceRepository(
                 errorMessage = t.message ?: "Failed to fetch devices",
             )
         } finally {
-            _state.update { it.copy(isRefreshing = false) }
+            if (isManual) {
+                _state.update { it.copy(isManualRefreshing = false) }
+            }
         }
     }
 
@@ -121,6 +131,13 @@ class DeviceRepository(
         // Detect changes for events
         val listChanged = prev.devices != next.devices
         val selectionChanged = prev.selectedSerial != next.selectedSerial
+        val errorChanged = prev.errorMessage != next.errorMessage
+        val adbReadyChanged = prev.isAdbReady != next.isAdbReady
+
+        // Avoid disturbing the UI if nothing important changed (prevents flicker on 3s polling).
+        if (!listChanged && !selectionChanged && !errorChanged && !adbReadyChanged) {
+            return
+        }
 
         _state.value = next
 

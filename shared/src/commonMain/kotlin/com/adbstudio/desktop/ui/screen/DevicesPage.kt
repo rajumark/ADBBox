@@ -49,9 +49,9 @@ fun DevicesPage(deviceRepository: DeviceRepository) {
 
             Button(
                 onClick = { deviceRepository.requestRefresh(scope) },
-                enabled = !state.isRefreshing,
+                enabled = !state.isManualRefreshing,
             ) {
-                Text(text = if (state.isRefreshing) "Loading…" else "Refresh")
+                Text(text = if (state.isManualRefreshing) "Loading…" else "Refresh")
             }
         }
 
@@ -87,7 +87,7 @@ fun DevicesPage(deviceRepository: DeviceRepository) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-            } else if (state.devices.isEmpty() && !state.isRefreshing && state.errorMessage == null) {
+            } else if (state.devices.isEmpty() && !state.isManualRefreshing && state.errorMessage == null) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
