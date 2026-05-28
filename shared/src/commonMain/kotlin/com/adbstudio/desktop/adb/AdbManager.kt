@@ -1,23 +1,14 @@
 package com.adbstudio.desktop.adb
 
+import com.adbstudio.desktop.adb.model.base.AdbCommand
+import com.adbstudio.desktop.core.result.AppResult
+
 expect class AdbManager() {
     val adbPath: String
     val isReady: Boolean
 
     /**
-     * Runs `adb devices` and returns parsed devices.
-     *
-     * Note: the window UI should call this from a coroutine (IO work).
+     * Runs a typed ADB command (see project_rules.md §3).
      */
-    suspend fun listDevices(): List<AdbDevice>
-
-    /**
-     * Runs: `adb [-s serial] shell pm list packages`
-     */
-    suspend fun listPackages(serial: String?): List<String>
-
-    /**
-     * Runs: `adb [-s serial] shell dumpsys battery`
-     */
-    suspend fun dumpsysBattery(serial: String?): String
+    suspend fun <T> run(command: AdbCommand<T>): AppResult<T>
 }

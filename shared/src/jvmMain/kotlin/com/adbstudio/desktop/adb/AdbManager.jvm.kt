@@ -1,5 +1,8 @@
 package com.adbstudio.desktop.adb
 
+import com.adbstudio.desktop.adb.model.base.AdbCommand
+import com.adbstudio.desktop.core.error.AppError
+import com.adbstudio.desktop.core.result.AppResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -21,48 +24,21 @@ actual class AdbManager {
         isReady = adbFile?.exists() == true && adbFile.canExecute()
     }
 
-    actual suspend fun listDevices(): List<AdbDevice> = withContext(Dispatchers.IO) {
-        if (!isReady || adbPath.isBlank()) return@withContext emptyList()
-
-        val output = runAdb(listOf("devices"))
-        parseAdbDevicesOutput(output)
-    }
-
-    actual suspend fun listPackages(serial: String?): List<String> = withContext(Dispatchers.IO) {
-        if (!isReady || adbPath.isBlank()) return@withContext emptyList()
-
-        val args = buildList {
-            if (!serial.isNullOrBlank()) {
-                add("-s")
-                add(serial)
-            }
-            addAll(listOf("shell", "pm", "list", "packages"))
+    actual suspend fun <T> run(command: AdbCommand<T>): AppResult<T> = withContext(Dispatchers.IO) {
+        if (!isReady || adbPath.isBlank()) {
+            return@withContext AppResult.Error(AppError.AdbNotReady(adbPath))
         }
-
-        val output = runAdb(args)
-        output
-            .lineSequence()
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .mapNotNull { line ->
-                // "package:com.example.app"
-                if (line.startsWith("package:")) line.removePrefix("package:").trim() else null
-            }
-            .toList()
-    }
-
-    actual suspend fun dumpsysBattery(serial: String?): String = withContext(Dispatchers.IO) {
-        if (!isReady || adbPath.isBlank()) return@withContext ""
-
-        val args = buildList {
-            if (!serial.isNullOrBlank()) {
-                add("-s")
-                add(serial)
-            }
-            addAll(listOf("shell", "dumpsys", "battery"))
+        try {
+            val output = runAdb(command.toCliArgs())
+            AppResult.Success(command.parse(output))
+        } catch (t: Throwable) {
+            AppResult.Error(
+                AppError.AdbCommandFailed(
+                    command = command.id,
+                    details = t.message ?: t.toString(),
+                ),
+            )
         }
-
-        runAdb(args)
     }
 
     private fun runAdb(args: List<String>): String {
@@ -75,25 +51,6 @@ actual class AdbManager {
         } catch (_: Exception) {
         }
         return output
-    }
-
-    private fun parseAdbDevicesOutput(output: String): List<AdbDevice> {
-        // Example:
-        // List of devices attached
-        // emulator-5554	device
-        // R58M1234ABC	unauthorized
-        return output
-            .lineSequence()
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .filterNot { it.startsWith("List of devices attached") }
-            .mapNotNull { line ->
-                val parts = line.split(Regex("\\s+"), limit = 3)
-                val serial = parts.getOrNull(0)?.trim().orEmpty()
-                val state = parts.getOrNull(1)?.trim().orEmpty()
-                if (serial.isBlank() || state.isBlank()) null else AdbDevice(serial = serial, state = state)
-            }
-            .toList()
     }
 
     private fun resolveAdb(os: String, appDir: File): File? {

@@ -1,6 +1,7 @@
 package com.adbstudio.desktop
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,14 +21,22 @@ import com.adbstudio.desktop.adb.AdbManager
 import com.adbstudio.desktop.commander.CommanderAction
 import com.adbstudio.desktop.commander.CommanderHost
 import com.adbstudio.desktop.commander.CommanderRegistry
-import com.adbstudio.desktop.core.events.SimpleEventBus
+import com.adbstudio.desktop.core.di.appModules
 import com.adbstudio.desktop.device.DeviceRepository
+import com.adbstudio.desktop.feature.apps.presentation.AppsViewModel
+import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
+import org.koin.compose.koinInject
+import org.koin.core.context.startKoin
 import kotlin.time.TimeSource
 
 fun main() = application {
-    val adbManager = remember { AdbManager() }
+    startKoin {
+        modules(appModules)
+    }
+
+    val adbManager = koinInject<AdbManager>()
     var commanderOpen by remember { mutableStateOf(false) }
     var lastShiftTime by remember { mutableStateOf(TimeSource.Monotonic.markNow()) }
     val doubleShiftThresholdMs = 400.0
@@ -53,12 +62,19 @@ fun main() = application {
     ) {
         var themeMode by remember { mutableStateOf(ThemeMode.System) }
         var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
-        val commanderRegistry = remember { CommanderRegistry() }
-        val eventBus = remember { SimpleEventBus() }
-        val deviceRepository = remember { DeviceRepository(adbManager = adbManager, eventBus = eventBus) }
+        val appScope = rememberCoroutineScope()
+        val commanderRegistry = koinInject<CommanderRegistry>()
+        val deviceRepository = koinInject<DeviceRepository>()
+        val appsViewModel = koinInject<AppsViewModel>()
+        val batteryViewModel = koinInject<BatteryViewModel>()
 
-        LaunchedEffect(Unit) {
-            deviceRepository.start(this)
+        DisposableEffect(Unit) {
+            deviceRepository.start(appScope)
+            onDispose {
+                deviceRepository.stop()
+                appsViewModel.close()
+                batteryViewModel.close()
+            }
         }
 
         LaunchedEffect(Unit) {
@@ -120,6 +136,8 @@ fun main() = application {
                 navigationItem = navigationItem,
                 adbManager = adbManager,
                 deviceRepository = deviceRepository,
+                appsViewModel = appsViewModel,
+                batteryViewModel = batteryViewModel,
             )
         }
     }

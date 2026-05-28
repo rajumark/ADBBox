@@ -2,8 +2,12 @@ package com.adbstudio.desktop.device
 
 import com.adbstudio.desktop.adb.AdbDevice
 import com.adbstudio.desktop.adb.AdbManager
+import com.adbstudio.desktop.adb.model.device.ListDevicesCommand
+import com.adbstudio.desktop.core.error.AppError
+import com.adbstudio.desktop.core.error.toUserMessage
 import com.adbstudio.desktop.core.events.AppEvent
 import com.adbstudio.desktop.core.events.EventBus
+import com.adbstudio.desktop.core.result.AppResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -98,8 +102,17 @@ class DeviceRepository(
             _state.update { it.copy(isAdbReady = true) }
         }
         try {
-            val devices = adbManager.listDevices()
-            setDevices(isAdbReady = true, devices = devices, errorMessage = null)
+            when (val result = adbManager.run(ListDevicesCommand())) {
+                is AppResult.Success -> setDevices(isAdbReady = true, devices = result.value, errorMessage = null)
+                is AppResult.Error -> {
+                    val adbReady = result.error !is AppError.AdbNotReady
+                    setDevices(
+                        isAdbReady = adbReady,
+                        devices = emptyList(),
+                        errorMessage = result.error.toUserMessage(),
+                    )
+                }
+            }
         } catch (t: Throwable) {
             setDevices(
                 isAdbReady = true,
