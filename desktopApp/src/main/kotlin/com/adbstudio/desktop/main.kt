@@ -25,6 +25,8 @@ import com.adbstudio.desktop.core.di.appModules
 import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.feature.apps.presentation.AppsViewModel
 import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
+import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
+import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
 import com.adbstudio.desktop.navigation.NavigationItem
 import com.adbstudio.desktop.theme.ThemeMode
 import org.koin.compose.koinInject
@@ -67,6 +69,8 @@ fun main() = application {
         val deviceRepository = koinInject<DeviceRepository>()
         val appsViewModel = koinInject<AppsViewModel>()
         val batteryViewModel = koinInject<BatteryViewModel>()
+        val calendarViewModel = koinInject<CalendarViewModel>()
+        val mediaViewModel = koinInject<MediaViewModel>()
 
         DisposableEffect(Unit) {
             deviceRepository.start(appScope)
@@ -74,6 +78,8 @@ fun main() = application {
                 deviceRepository.stop()
                 appsViewModel.close()
                 batteryViewModel.close()
+                calendarViewModel.close()
+                mediaViewModel.close()
             }
         }
 
@@ -138,6 +144,8 @@ fun main() = application {
                 deviceRepository = deviceRepository,
                 appsViewModel = appsViewModel,
                 batteryViewModel = batteryViewModel,
+                calendarViewModel = calendarViewModel,
+                mediaViewModel = mediaViewModel,
             )
         }
     }
@@ -152,6 +160,8 @@ private fun MenuBarScope.NavigationMenu(
         Item("Devices") { onSelect(NavigationItem.Devices) }
         Item("Apps") { onSelect(NavigationItem.Apps) }
         Item("Battery") { onSelect(NavigationItem.Battery) }
+        Item("Calendar") { onSelect(NavigationItem.Calendar) }
+        Item("Media") { onSelect(NavigationItem.Media) }
         Item("Debug Info") { onSelect(NavigationItem.DebugInfo) }
         Item("Settings") { onSelect(NavigationItem.Settings) }
         Item("UI Inspector") { onSelect(NavigationItem.UiInspector) }

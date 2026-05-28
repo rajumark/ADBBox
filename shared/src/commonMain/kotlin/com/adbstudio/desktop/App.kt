@@ -12,8 +12,12 @@ import com.adbstudio.desktop.device.DeviceRepository
 import com.adbstudio.desktop.feature.apps.presentation.AppsViewModel
 import com.adbstudio.desktop.feature.battery.presentation.BatteryViewModel
 import com.adbstudio.desktop.feature.settings.presentation.SettingsViewModel
+import com.adbstudio.desktop.feature.calendar.presentation.CalendarViewModel
+import com.adbstudio.desktop.feature.contacts.presentation.ContactsViewModel
 import com.adbstudio.desktop.ui.screen.AppsScreen
 import com.adbstudio.desktop.ui.screen.BatteryScreen
+import com.adbstudio.desktop.ui.screen.CalendarScreen
+import com.adbstudio.desktop.ui.screen.ContactsScreen
 import com.adbstudio.desktop.ui.screen.DebugInfoScreen
 import com.adbstudio.desktop.ui.screen.DevicesPage
 import com.adbstudio.desktop.ui.screen.SettingsScreen
@@ -29,6 +33,10 @@ fun App(
     appsViewModel: AppsViewModel = koinInject(),
     batteryViewModel: BatteryViewModel = koinInject(),
     settingsViewModel: SettingsViewModel = koinInject(),
+    calendarViewModel: CalendarViewModel = koinInject(),
+    contactsViewModel: ContactsViewModel = koinInject(),
+    lifecycleViewModel: LifecycleViewModel = koinInject(),
+    mediaViewModel: MediaViewModel = koinInject(),
 ) {
     AdbStudioTheme(themeMode = themeMode) {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -39,6 +47,8 @@ fun App(
                 NavigationItem.DebugInfo -> DebugInfoScreen(adbManager = adbManager)
                 NavigationItem.Settings -> SettingsScreen(viewModel = settingsViewModel)
                 NavigationItem.UiInspector -> UiInspectorScreen()
+                NavigationItem.Calendar -> CalendarScreen(viewModel = calendarViewModel)
+                NavigationItem.Contacts -> ContactsScreen(viewModel = contactsViewModel)
             }
         }
     }

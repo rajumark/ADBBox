@@ -10,4 +10,6 @@ enum class NavigationItem(
     DebugInfo("Debug Info"),
     Settings("Settings"),
     UiInspector("UI Inspector"),
+    Calendar("Calendar"),
+    Contacts("Contacts"),
 }
