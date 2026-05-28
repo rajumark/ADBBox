@@ -8,7 +8,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
@@ -22,19 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
 class SimpleTaskManager : TaskManager {
     private val scope = CoroutineScope(SupervisorJob())
     private val tasks = ConcurrentHashMap<String, TaskHandleImpl>()
-    private val maxConcurrentPerDevice = 3
 
     override suspend fun submit(task: AdbTask): TaskHandle {
         val handle = TaskHandleImpl(task.id, task.description, task.serial)
         tasks[task.id] = handle
-
-        val deviceTaskCount = tasks.values.count { it.serial == task.serial && it !is CompletedHandle }
-        if (deviceTaskCount > maxConcurrentPerDevice) {
-            handle._state.value = TaskState.Failed(
-                AppError.AdbCommandFailed(task.id, "Max concurrent tasks ($maxConcurrentPerDevice) exceeded for device ${task.serial}")
-            )
-            return handle
-        }
 
         handle._state.value = TaskState.Running
         scope.launch {
@@ -54,7 +44,7 @@ class SimpleTaskManager : TaskManager {
         val result = MutableStateFlow<List<TaskHandle>>(emptyList())
         scope.launch {
             val filtered = tasks.values.filter { handle ->
-                (serial == null || handle.serial == serial) && handle !is CompletedHandle
+                serial == null || handle.serial == serial
             }
             result.value = filtered
         }
@@ -66,7 +56,7 @@ class SimpleTaskManager : TaskManager {
     /** Cancel all tasks for a specific device (e.g., on device disconnect). */
     fun cancelAllForDevice(serial: String) {
         tasks.values
-            .filter { it.serial == serial && it !is CompletedHandle }
+            .filter { it.serial == serial }
             .forEach { it.cancel() }
     }
 
@@ -90,11 +80,4 @@ private open class TaskHandleImpl(
         job?.cancel()
         _state.value = TaskState.Failed(AppError.AdbCommandFailed(id, "Cancelled"))
     }
-}
-
-private class CompletedHandle : TaskHandle {
-    override val id: String = ""
-    override val description: String = ""
-    override val state: StateFlow<TaskState> = MutableStateFlow(TaskState.Completed)
-    override fun cancel() {}
 }

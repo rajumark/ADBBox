@@ -1,0 +1,1124 @@
+Project File Structure
+Generated: 28 May 2026
+========================================
+
+.
+├── README.md
+├── build
+│   └── reports
+│       ├── configuration-cache
+│       │   ├── 155ulbp5wpzlpoeje9zxzf437
+│       │   │   ├── 57hcwzy922sx3vcy6zmfjer9u
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── 6wgq7c87pwfw5pb0lsyqumnud
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── bo1d51hq1d2h7lxwhs6cq3ihw
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 1nfjf3j7bzzx659fdnp7s2rt3
+│       │   │   └── 44otex1krn28j21qcfw0wztoz
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 23yrvcf7ug0ysl59q75x4m68d
+│       │   │   └── 6sd468r8f1j0pg23itt1tdjaf
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 3maublzfz7w3mzvjf4rzan07w
+│       │   │   └── awwvlqq27vsmd6az6las8p06v
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 3stvklns0uknk4w4o37cr1z8o
+│       │   │   └── 7qoh8fk0o3oj78gajvntxlyim
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 4av9hu8gleq5puk2xylyoa8b3
+│       │   │   └── 3h5i3hode15u98tqf34ifmglc
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 4isoekw5qboz8lrthf4vpyey6
+│       │   │   ├── 12h9muqfw45cb01l0q14mpci0
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── 6hpytu9oikjnvjnbyr3m0jbvc
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── 6yd5yrme0nl8wvc8y87nbd5pr
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── axjc4dul8x4ddc36jfyj27iop
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── hj3jlu4pmb0v6kfidvoatagc
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 4zh5mrxctn624y2vgczrblp72
+│       │   │   └── 57jy9op7s7570qzm2ewszpoox
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 54c4mmf933jrj8kswr1pag9d7
+│       │   │   ├── 1h26xlobjom92ui0hu2hpo2s8
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── c8f536ma0y97hl0g5syxvugxk
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 57pp2tx8pvksbqc8l6swnbqsc
+│       │   │   └── 2zknnql4aet7s6ipvzzczasp
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 5bcigey179my2dthr2qknx96q
+│       │   │   └── f1xjjnupjjl04f6riti3oipdm
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 5qqgkbv3gm67thvv6et4734g4
+│       │   │   └── 5od5n9jj5anj2f61gp68rkqxr
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 693yq8jvpo9jtmub4hked1gu5
+│       │   │   └── 1byxavourc971ij0uekhsgs0s
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 6ibkab5lkhajtuu1aqdkrz2ky
+│       │   │   ├── 4xrezn0tib0rztcoats12rnhp
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── 8veztrscvtqns7bm835brbu3h
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 7h7wqvczbydmn0e3ich4n07ff
+│       │   │   └── 28kmw8z0whw3et7i3nbmalfqz
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 7jepf6lhpoytkj3dzc1896oww
+│       │   │   └── 4wx5btljwb9dyg513ssnhsenf
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 7rp0b90u7njyii3gys5sdy6q7
+│       │   │   ├── 3uxjjxbp2qkhugj165p959ih8
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── brzviqcaiewe9e0vfo1oq18rc
+│       │   │       └── configuration-cache-report.html
+│       │   ├── 8l60mncg294cwxhcmzp3b8yuu
+│       │   │   ├── 8aqhabtcoyk3mmvyz9nq3g1nj
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── b449usz4i5sjopr8t3sglfz2x
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── c3bj0tcqbtxgx0gaiqcpwqzlq
+│       │   │       └── configuration-cache-report.html
+│       │   ├── a6ofjn7agicslbmd2hff3gcau
+│       │   │   └── esv4r8l3e03h07940r0fk8p8
+│       │   │       └── configuration-cache-report.html
+│       │   ├── al4kob2bmrkvgm9a0fr0ajknn
+│       │   │   ├── 13t0czzh7fvfnvg6h4qvaasy2
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── 9a5f17woflnrt8emxu4jaiz1m
+│       │   │       └── configuration-cache-report.html
+│       │   ├── aq1arib0t219jgizmxbw82snd
+│       │   │   └── 46u7c3s2v1b8ydsy1chafrczd
+│       │   │       └── configuration-cache-report.html
+│       │   ├── biu21puyvcq9adlcqmm30whuv
+│       │   │   └── 829ed01xckv6ydptncnwfb8nm
+│       │   │       └── configuration-cache-report.html
+│       │   ├── blg626gj8o8tlh3fsp3bwjd6l
+│       │   │   ├── 8bq1w4d3z1zq4393zqcw35bs0
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── cqx2mr9hu77uafnb8ec4rado0
+│       │   │       └── configuration-cache-report.html
+│       │   ├── cisoc7obdqw6rr164emtuhhqk
+│       │   │   └── b9onny2pzqzs8jkgkk08f3ulz
+│       │   │       └── configuration-cache-report.html
+│       │   ├── cs63r1a6a7hlgwg4zt7uprgx3
+│       │   │   ├── 3srtk24xbt3fd1g1nmrltho48
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── c2fd40iwx8u6u714a9iml9pow
+│       │   │       └── configuration-cache-report.html
+│       │   ├── drippdcat8yyyzuvgws8kcay9
+│       │   │   └── 4nsg7dz4m1eaa5k1hkov634yd
+│       │   │       └── configuration-cache-report.html
+│       │   ├── dtgzv2uj7fhzwjvl6p0xmh4k6
+│       │   │   └── a934l8wyxo3zpcofdxs2gyqya
+│       │   │       └── configuration-cache-report.html
+│       │   ├── emp4ja7txpfmlsec1jmkzxi9q
+│       │   │   └── cn6uv1ms6471qn018kqv6fdwo
+│       │   │       └── configuration-cache-report.html
+│       │   ├── eyihvdvnvsy27coxbaxd3ddod
+│       │   │   ├── 3pje62zp3p084zyu3h5en4jid
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   ├── a52mr42pyeeehqmruc8f8n2lf
+│       │   │   │   └── configuration-cache-report.html
+│       │   │   └── d64ocu1iyp0nwpg1dde8yefaw
+│       │   │       └── configuration-cache-report.html
+│       │   └── f2zgjnu6nc1l2tmagg359hny9
+│       │       └── aihiyo3w1s1dchc2z1miwqqp4
+│       │           └── configuration-cache-report.html
+│       └── problems
+│           └── problems-report.html
+├── build.gradle.kts
+├── desktopApp
+│   ├── build
+│   │   ├── classes
+│   │   │   └── kotlin
+│   │   │       └── main
+│   │   │           ├── META-INF
+│   │   │           │   └── desktopApp.kotlin_module
+│   │   │           └── com
+│   │   │               └── adbstudio
+│   │   │                   └── desktop
+│   │   │                       ├── ComposableSingletons$MainKt$lambda$-224519492$1$2$1.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda$-224519492$1$3$1.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda$-224519492$1$4$2$1.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$$inlined$koinInject$1.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$1.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$10.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$11.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$12.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$13.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$14.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$2.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$3.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$4.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$5.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$6.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$7.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$8.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$$inlined$koinInject$9.class
+│   │   │                       ├── ComposableSingletons$MainKt$lambda__224519492$lambda$0$10$6$0$$inlined$onDispose$1.class
+│   │   │                       ├── ComposableSingletons$MainKt.class
+│   │   │                       └── MainKt.class
+│   │   ├── generated
+│   │   │   └── compose
+│   │   │       └── resourceGenerator
+│   │   │           └── assembledResources
+│   │   │               └── Main
+│   │   │                   └── composeResources
+│   │   │                       └── adbstudio.desktopapp.generated.resources
+│   │   ├── kotlin
+│   │   │   └── compileKotlin
+│   │   │       ├── cacheable
+│   │   │       │   ├── caches-jvm
+│   │   │       │   │   ├── compilerPluginFiles
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab.keystream
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab.keystream.len
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab.len
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab.values.at
+│   │   │       │   │   │   ├── outputs-generated-for-plugins.tab_i.len
+│   │   │       │   │   │   ├── sources-referenced-by-plugins.tab
+│   │   │       │   │   │   ├── sources-referenced-by-plugins.tab.keystream
+│   │   │       │   │   │   ├── sources-referenced-by-plugins.tab.keystream.len
+│   │   │       │   │   │   ├── sources-referenced-by-plugins.tab.len
+│   │   │       │   │   │   ├── sources-referenced-by-plugins.tab.values.at
+│   │   │       │   │   │   └── sources-referenced-by-plugins.tab_i.len
+│   │   │       │   │   ├── inputs
+│   │   │       │   │   │   ├── source-to-output.tab
+│   │   │       │   │   │   ├── source-to-output.tab.keystream
+│   │   │       │   │   │   ├── source-to-output.tab.keystream.len
+│   │   │       │   │   │   ├── source-to-output.tab.len
+│   │   │       │   │   │   ├── source-to-output.tab.values.at
+│   │   │       │   │   │   ├── source-to-output.tab_i
+│   │   │       │   │   │   └── source-to-output.tab_i.len
+│   │   │       │   │   ├── jvm
+│   │   │       │   │   │   └── kotlin
+│   │   │       │   │   │       ├── internal-name-to-source.tab
+│   │   │       │   │   │       ├── internal-name-to-source.tab.keystream
+│   │   │       │   │   │       ├── internal-name-to-source.tab.keystream.len
+│   │   │       │   │   │       ├── internal-name-to-source.tab.len
+│   │   │       │   │   │       ├── internal-name-to-source.tab.values.at
+│   │   │       │   │   │       ├── internal-name-to-source.tab_i
+│   │   │       │   │   │       ├── internal-name-to-source.tab_i.len
+│   │   │       │   │   │       ├── package-parts.tab
+│   │   │       │   │   │       ├── package-parts.tab.keystream
+│   │   │       │   │   │       ├── package-parts.tab.keystream.len
+│   │   │       │   │   │       ├── package-parts.tab.len
+│   │   │       │   │   │       ├── package-parts.tab.values.at
+│   │   │       │   │   │       ├── package-parts.tab_i
+│   │   │       │   │   │       ├── package-parts.tab_i.len
+│   │   │       │   │   │       ├── proto.tab
+│   │   │       │   │   │       ├── proto.tab.keystream
+│   │   │       │   │   │       ├── proto.tab.keystream.len
+│   │   │       │   │   │       ├── proto.tab.len
+│   │   │       │   │   │       ├── proto.tab.values.at
+│   │   │       │   │   │       ├── proto.tab_i
+│   │   │       │   │   │       ├── proto.tab_i.len
+│   │   │       │   │   │       ├── source-to-classes.tab
+│   │   │       │   │   │       ├── source-to-classes.tab.keystream
+│   │   │       │   │   │       ├── source-to-classes.tab.keystream.len
+│   │   │       │   │   │       ├── source-to-classes.tab.len
+│   │   │       │   │   │       ├── source-to-classes.tab.values.at
+│   │   │       │   │   │       ├── source-to-classes.tab_i
+│   │   │       │   │   │       └── source-to-classes.tab_i.len
+│   │   │       │   │   └── lookups
+│   │   │       │   │       ├── counters.tab
+│   │   │       │   │       ├── file-to-id.tab
+│   │   │       │   │       ├── file-to-id.tab.keystream
+│   │   │       │   │       ├── file-to-id.tab.keystream.len
+│   │   │       │   │       ├── file-to-id.tab.len
+│   │   │       │   │       ├── file-to-id.tab.values.at
+│   │   │       │   │       ├── file-to-id.tab_i
+│   │   │       │   │       ├── file-to-id.tab_i.len
+│   │   │       │   │       ├── id-to-file.tab
+│   │   │       │   │       ├── id-to-file.tab.keystream
+│   │   │       │   │       ├── id-to-file.tab.keystream.len
+│   │   │       │   │       ├── id-to-file.tab.len
+│   │   │       │   │       ├── id-to-file.tab.values.at
+│   │   │       │   │       ├── id-to-file.tab_i
+│   │   │       │   │       ├── id-to-file.tab_i.len
+│   │   │       │   │       ├── lookups.tab
+│   │   │       │   │       ├── lookups.tab.keystream
+│   │   │       │   │       ├── lookups.tab.keystream.len
+│   │   │       │   │       ├── lookups.tab.len
+│   │   │       │   │       ├── lookups.tab.values.at
+│   │   │       │   │       ├── lookups.tab_i
+│   │   │       │   │       └── lookups.tab_i.len
+│   │   │       │   └── last-build.bin
+│   │   │       ├── classpath-snapshot
+│   │   │       │   └── shrunk-classpath-snapshot.bin
+│   │   │       └── local-state
+│   │   ├── libs
+│   │   │   └── desktopApp.jar
+│   │   ├── resources
+│   │   │   └── main
+│   │   │       └── composeResources
+│   │   │           └── adbstudio.desktopapp.generated.resources
+│   │   └── tmp
+│   │       └── jar
+│   │           └── MANIFEST.MF
+│   ├── build.gradle.kts
+│   └── src
+│       └── main
+│           ├── kotlin
+│           │   └── com
+│           │       └── adbstudio
+│           │           └── desktop
+│           │               └── main.kt
+│           └── resources
+├── gradle
+│   ├── gradle-daemon-jvm.properties
+│   ├── libs.versions.toml
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── project_helpers
+│   ├── future_commands
+│   │   ├── acpi.md
+│   │   ├── adb.md
+│   │   ├── am.md
+│   │   ├── appops.md
+│   │   ├── battery.md
+│   │   ├── bluetooth_manager.md
+│   │   ├── bmgr.md
+│   │   ├── clipboard.md
+│   │   ├── connectivity.md
+│   │   ├── content.md
+│   │   ├── date.md
+│   │   ├── deviceidle.md
+│   │   ├── dpm.md
+│   │   ├── dumpsys.md
+│   │   ├── exec-out.md
+│   │   ├── find.md
+│   │   ├── getevent.md
+│   │   ├── getprop.md
+│   │   ├── input.md
+│   │   ├── keyevent.md
+│   │   ├── lock_settings.md
+│   │   ├── logcat.md
+│   │   ├── magisk.md
+│   │   ├── monkey.md
+│   │   ├── netpolicy.md
+│   │   ├── network_time_update_service.md
+│   │   ├── network_watchlist.md
+│   │   ├── notifications.md
+│   │   ├── pm.md
+│   │   ├── reboot_readiness.md
+│   │   ├── safety_center.md
+│   │   ├── sandbox.md
+│   │   ├── screencap.md
+│   │   ├── screenrecord.md
+│   │   ├── service.md
+│   │   ├── setprop.md
+│   │   ├── settings.md
+│   │   ├── shortcut.md
+│   │   ├── sqlite3.md
+│   │   ├── statusbar.md
+│   │   ├── svc.md
+│   │   ├── sysfs.md
+│   │   ├── tcpdump.md
+│   │   ├── telecom.md
+│   │   ├── termux.md
+│   │   ├── translation.md
+│   │   ├── uiautomator.md
+│   │   ├── uimode.md
+│   │   ├── wifi.md
+│   │   └── wm.md
+│   └── scripts
+│       ├── project_files_map_28_may_2026.txt
+│       └── tree.sh
+├── project_rules.md
+├── run.sh
+├── server
+│   └── build
+│       ├── classes
+│       │   └── com
+│       │       └── adbstudio
+│       │           └── IconExtractor.class
+│       └── dex
+│           └── classes.dex
+├── settings.gradle.kts
+└── shared
+    ├── build
+    │   ├── classes
+    │   │   └── kotlin
+    │   │       └── jvm
+    │   │           └── main
+    │   │               ├── META-INF
+    │   │               │   └── shared.kotlin_module
+    │   │               ├── adbstudio
+    │   │               │   └── shared
+    │   │               │       └── generated
+    │   │               │           └── resources
+    │   │               │               ├── ActualResourceCollectorsKt.class
+    │   │               │               ├── Drawable0_commonMainKt.class
+    │   │               │               ├── Res$array.class
+    │   │               │               ├── Res$drawable.class
+    │   │               │               ├── Res$font.class
+    │   │               │               ├── Res$plurals.class
+    │   │               │               ├── Res$string.class
+    │   │               │               └── Res.class
+    │   │               └── com
+    │   │                   └── adbstudio
+    │   │                       └── desktop
+    │   │                           ├── AppKt$App$$inlined$koinInject$1.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$10.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$11.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$12.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$13.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$14.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$15.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$2.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$3.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$4.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$5.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$6.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$7.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$8.class
+    │   │                           ├── AppKt$App$$inlined$koinInject$9.class
+    │   │                           ├── AppKt.class
+    │   │                           ├── JVMPlatform.class
+    │   │                           ├── Platform.class
+    │   │                           ├── Platform_jvmKt.class
+    │   │                           ├── adb
+    │   │                           │   ├── AdbDevice.class
+    │   │                           │   ├── AdbManager$pullFile$2$1.class
+    │   │                           │   ├── AdbManager$pullFile$2.class
+    │   │                           │   ├── AdbManager$run$2$1.class
+    │   │                           │   ├── AdbManager$run$2.class
+    │   │                           │   ├── AdbManager$runShell$2$1.class
+    │   │                           │   ├── AdbManager$runShell$2.class
+    │   │                           │   ├── AdbManager.class
+    │   │                           │   └── model
+    │   │                           │       ├── base
+    │   │                           │       │   ├── AdbCommand.class
+    │   │                           │       │   ├── CommandCategory.class
+    │   │                           │       │   ├── CommandMetadata.class
+    │   │                           │       │   └── CommandRegistry.class
+    │   │                           │       ├── battery
+    │   │                           │       │   ├── BatteryInfo.class
+    │   │                           │       │   └── DumpsysBatteryCommand.class
+    │   │                           │       ├── calendar
+    │   │                           │       │   ├── CalendarQueryType.class
+    │   │                           │       │   ├── QueryCalendarContentCommand$Companion.class
+    │   │                           │       │   └── QueryCalendarContentCommand.class
+    │   │                           │       ├── contacts
+    │   │                           │       │   ├── QueryContactsContentCommand$Companion.class
+    │   │                           │       │   └── QueryContactsContentCommand.class
+    │   │                           │       ├── device
+    │   │                           │       │   └── ListDevicesCommand.class
+    │   │                           │       ├── inspector
+    │   │                           │       │   └── GetCurrentActivityCommand.class
+    │   │                           │       ├── lifecycle
+    │   │                           │       │   ├── DumpsysLifecycleCommand.class
+    │   │                           │       │   └── LogEntry.class
+    │   │                           │       ├── media
+    │   │                           │       │   ├── MediaContentTypeUri.class
+    │   │                           │       │   ├── MediaSourceTypeUri.class
+    │   │                           │       │   ├── QueryMediaContentCommand$parse$$inlined$sortedByDescending$1.class
+    │   │                           │       │   ├── QueryMediaContentCommand.class
+    │   │                           │       │   └── QueryMediaContentCommandKt.class
+    │   │                           │       ├── messages
+    │   │                           │       │   ├── QueryMessagesContentCommand$Companion.class
+    │   │                           │       │   ├── QueryMessagesContentCommand$parse$$inlined$sortedByDescending$1.class
+    │   │                           │       │   ├── QueryMessagesContentCommand.class
+    │   │                           │       │   └── QueryMessagesContentCommandKt.class
+    │   │                           │       ├── notification
+    │   │                           │       │   ├── DumpsysNotificationCommand.class
+    │   │                           │       │   ├── NotificationInfo.class
+    │   │                           │       │   └── NotificationItem.class
+    │   │                           │       ├── package
+    │   │                           │       │   ├── ClearAppDataCommand.class
+    │   │                           │       │   ├── DisableAppCommand.class
+    │   │                           │       │   ├── DumpsysPackageCommand.class
+    │   │                           │       │   ├── EnableAppCommand.class
+    │   │                           │       │   ├── ForceStopAppCommand.class
+    │   │                           │       │   ├── GetForegroundAppCommand.class
+    │   │                           │       │   ├── GrantPermissionCommand.class
+    │   │                           │       │   ├── LaunchAppCommand.class
+    │   │                           │       │   ├── ListPackagesCommand.class
+    │   │                           │       │   ├── OpenAppSettingsCommand.class
+    │   │                           │       │   ├── PackagePathCommand.class
+    │   │                           │       │   ├── RevokePermissionCommand.class
+    │   │                           │       │   └── UninstallAppCommand.class
+    │   │                           │       └── settings
+    │   │                           │           └── OpenAndroidSettingsCommand.class
+    │   │                           ├── commander
+    │   │                           │   ├── CommanderAction.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$1$1.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$2$1.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$3$1.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$4$1$1$3$1$1$1$1.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$lambda$12$0$0$2$0$$inlined$itemsIndexed$default$1.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$lambda$12$0$0$2$0$$inlined$itemsIndexed$default$2.class
+    │   │                           │   ├── CommanderDialogKt$CommanderDialog$lambda$12$0$0$2$0$$inlined$itemsIndexed$default$3.class
+    │   │                           │   ├── CommanderDialogKt.class
+    │   │                           │   ├── CommanderHostKt.class
+    │   │                           │   ├── CommanderRegistry.class
+    │   │                           │   ├── CommanderRegistryKt.class
+    │   │                           │   └── ComposableSingletons$CommanderDialogKt.class
+    │   │                           ├── core
+    │   │                           │   ├── di
+    │   │                           │   │   └── ModuleKt.class
+    │   │                           │   ├── error
+    │   │                           │   │   ├── AppError$AdbCommandFailed.class
+    │   │                           │   │   ├── AppError$AdbNotReady.class
+    │   │                           │   │   ├── AppError$Unknown.class
+    │   │                           │   │   ├── AppError.class
+    │   │                           │   │   └── AppErrorKt.class
+    │   │                           │   ├── events
+    │   │                           │   │   ├── AppEvent$DeviceListUpdated.class
+    │   │                           │   │   ├── AppEvent$SelectedDeviceChanged.class
+    │   │                           │   │   ├── AppEvent.class
+    │   │                           │   │   ├── EventBus.class
+    │   │                           │   │   └── SimpleEventBus.class
+    │   │                           │   ├── result
+    │   │                           │   │   ├── AppResult$Error.class
+    │   │                           │   │   ├── AppResult$Success.class
+    │   │                           │   │   └── AppResult.class
+    │   │                           │   └── task
+    │   │                           │       ├── AdbTask.class
+    │   │                           │       ├── SimpleTaskManager$activeTasks$1.class
+    │   │                           │       ├── SimpleTaskManager$submit$2.class
+    │   │                           │       ├── SimpleTaskManager.class
+    │   │                           │       ├── TaskHandle.class
+    │   │                           │       ├── TaskHandleImpl.class
+    │   │                           │       ├── TaskManager.class
+    │   │                           │       ├── TaskState$Completed.class
+    │   │                           │       ├── TaskState$Failed.class
+    │   │                           │       ├── TaskState$Progress.class
+    │   │                           │       ├── TaskState$Queued.class
+    │   │                           │       ├── TaskState$Running.class
+    │   │                           │       └── TaskState.class
+    │   │                           ├── device
+    │   │                           │   ├── ConnectionType.class
+    │   │                           │   ├── DeviceCapability$Bugreport.class
+    │   │                           │   ├── DeviceCapability$IncrementalInstall.class
+    │   │                           │   ├── DeviceCapability$RootAccess.class
+    │   │                           │   ├── DeviceCapability$ScreenMirroring.class
+    │   │                           │   ├── DeviceCapability$ScreenRecording.class
+    │   │                           │   ├── DeviceCapability$TcpipMode.class
+    │   │                           │   ├── DeviceCapability$WirelessDebugging.class
+    │   │                           │   ├── DeviceCapability.class
+    │   │                           │   ├── DeviceRepository$publishAsync$1.class
+    │   │                           │   ├── DeviceRepository$refreshOnce$1.class
+    │   │                           │   ├── DeviceRepository$requestRefresh$1.class
+    │   │                           │   ├── DeviceRepository$start$1.class
+    │   │                           │   ├── DeviceRepository.class
+    │   │                           │   ├── DeviceSession.class
+    │   │                           │   └── DevicesState.class
+    │   │                           ├── feature
+    │   │                           │   ├── apps
+    │   │                           │   │   ├── data
+    │   │                           │   │   │   └── PinnedAppsManager.class
+    │   │                           │   │   ├── model
+    │   │                           │   │   │   ├── AppType.class
+    │   │                           │   │   │   ├── PackageInfo.class
+    │   │                           │   │   │   ├── PackagePermission.class
+    │   │                           │   │   │   └── PermissionType.class
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── AppsEvent$ClearData.class
+    │   │                           │   │       ├── AppsEvent$CopyPackageName.class
+    │   │                           │   │       ├── AppsEvent$DisableApp.class
+    │   │                           │   │       ├── AppsEvent$DismissActionMessage.class
+    │   │                           │   │       ├── AppsEvent$DownloadApk.class
+    │   │                           │   │       ├── AppsEvent$EnableApp.class
+    │   │                           │   │       ├── AppsEvent$ForceStopApp.class
+    │   │                           │   │       ├── AppsEvent$LaunchApp.class
+    │   │                           │   │       ├── AppsEvent$OpenAppSettings.class
+    │   │                           │   │       ├── AppsEvent$Refresh.class
+    │   │                           │   │       ├── AppsEvent$RefreshDetails.class
+    │   │                           │   │       ├── AppsEvent$RestartApp.class
+    │   │                           │   │       ├── AppsEvent$SelectPackage.class
+    │   │                           │   │       ├── AppsEvent$SetDetailsTab.class
+    │   │                           │   │       ├── AppsEvent$SetFilter.class
+    │   │                           │   │       ├── AppsEvent$SetSearchQuery.class
+    │   │                           │   │       ├── AppsEvent$TogglePin.class
+    │   │                           │   │       ├── AppsEvent$UninstallApp.class
+    │   │                           │   │       ├── AppsEvent$ViewOnPlayStore.class
+    │   │                           │   │       ├── AppsEvent.class
+    │   │                           │   │       ├── AppsUiState$special$$inlined$compareByDescending$1.class
+    │   │                           │   │       ├── AppsUiState$special$$inlined$thenBy$1.class
+    │   │                           │   │       ├── AppsUiState$special$$inlined$thenByDescending$1.class
+    │   │                           │   │       ├── AppsUiState.class
+    │   │                           │   │       ├── AppsViewModel$1$2.class
+    │   │                           │   │       ├── AppsViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── AppsViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── AppsViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── AppsViewModel$1.class
+    │   │                           │   │       ├── AppsViewModel$Companion.class
+    │   │                           │   │       ├── AppsViewModel$executeAction$1.class
+    │   │                           │   │       ├── AppsViewModel$loadPackageDetails$1.class
+    │   │                           │   │       ├── AppsViewModel$loadPackageDetails$2.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$1.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$2.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$3.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$4.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$5.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$6.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$7.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$8.class
+    │   │                           │   │       ├── AppsViewModel$onEvent$9.class
+    │   │                           │   │       ├── AppsViewModel$refreshForegroundApp$1.class
+    │   │                           │   │       ├── AppsViewModel$refreshInternal$1.class
+    │   │                           │   │       ├── AppsViewModel$refreshInternal$2.class
+    │   │                           │   │       ├── AppsViewModel$startPolling$1.class
+    │   │                           │   │       ├── AppsViewModel.class
+    │   │                           │   │       └── DetailsTab.class
+    │   │                           │   ├── battery
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── BatteryEvent$Refresh.class
+    │   │                           │   │       ├── BatteryEvent.class
+    │   │                           │   │       ├── BatteryUiState.class
+    │   │                           │   │       ├── BatteryViewModel$1$2.class
+    │   │                           │   │       ├── BatteryViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── BatteryViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── BatteryViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── BatteryViewModel$1.class
+    │   │                           │   │       ├── BatteryViewModel$refreshInternal$1.class
+    │   │                           │   │       └── BatteryViewModel.class
+    │   │                           │   ├── calendar
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── CalendarEvent$Refresh.class
+    │   │                           │   │       ├── CalendarEvent$SetQueryType.class
+    │   │                           │   │       ├── CalendarEvent$SetSearchQuery.class
+    │   │                           │   │       ├── CalendarEvent$ToggleOriginal.class
+    │   │                           │   │       ├── CalendarEvent.class
+    │   │                           │   │       ├── CalendarUiState$special$$inlined$sortedBy$1.class
+    │   │                           │   │       ├── CalendarUiState.class
+    │   │                           │   │       ├── CalendarViewModel$1$2.class
+    │   │                           │   │       ├── CalendarViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── CalendarViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── CalendarViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── CalendarViewModel$1.class
+    │   │                           │   │       ├── CalendarViewModel$refreshInternal$1.class
+    │   │                           │   │       └── CalendarViewModel.class
+    │   │                           │   ├── contacts
+    │   │                           │   │   ├── domain
+    │   │                           │   │   │   └── ContactMaster.class
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── ContactMaster.class
+    │   │                           │   │       ├── ContactsEvent$Refresh.class
+    │   │                           │   │       ├── ContactsEvent$SelectContact.class
+    │   │                           │   │       ├── ContactsEvent$SetSearchQuery.class
+    │   │                           │   │       ├── ContactsEvent.class
+    │   │                           │   │       ├── ContactsUiState.class
+    │   │                           │   │       ├── ContactsViewModel$1$2.class
+    │   │                           │   │       ├── ContactsViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── ContactsViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── ContactsViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── ContactsViewModel$1.class
+    │   │                           │   │       ├── ContactsViewModel$buildContacts$$inlined$sortedByDescending$1.class
+    │   │                           │   │       ├── ContactsViewModel$refreshInternal$1.class
+    │   │                           │   │       └── ContactsViewModel.class
+    │   │                           │   ├── deviceproperties
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── DevicePropertiesEvent$Refresh.class
+    │   │                           │   │       ├── DevicePropertiesEvent$SetSearchQuery.class
+    │   │                           │   │       ├── DevicePropertiesEvent.class
+    │   │                           │   │       ├── DevicePropertiesUiState.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$1$2.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$1.class
+    │   │                           │   │       ├── DevicePropertiesViewModel$refreshInternal$1.class
+    │   │                           │   │       └── DevicePropertiesViewModel.class
+    │   │                           │   ├── devicesettings
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── DeviceSettingsEvent$Refresh.class
+    │   │                           │   │       ├── DeviceSettingsEvent$SetSearchQuery.class
+    │   │                           │   │       ├── DeviceSettingsEvent$SetTab.class
+    │   │                           │   │       ├── DeviceSettingsEvent.class
+    │   │                           │   │       ├── DeviceSettingsUiState$WhenMappings.class
+    │   │                           │   │       ├── DeviceSettingsUiState.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$1$2.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$1.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$SettingResult.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$fetchSettings$1.class
+    │   │                           │   │       ├── DeviceSettingsViewModel$refreshInternal$1.class
+    │   │                           │   │       ├── DeviceSettingsViewModel.class
+    │   │                           │   │       └── SettingsTab.class
+    │   │                           │   ├── inspector
+    │   │                           │   │   ├── data
+    │   │                           │   │   │   └── WindowDumpParser.class
+    │   │                           │   │   ├── domain
+    │   │                           │   │   │   ├── Rect.class
+    │   │                           │   │   │   └── UiNode.class
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── UiInspectorEvent$Refresh.class
+    │   │                           │   │       ├── UiInspectorEvent$SelectNode.class
+    │   │                           │   │       ├── UiInspectorEvent$SetLayerDepth.class
+    │   │                           │   │       ├── UiInspectorEvent$SetNodeTraversalIndex.class
+    │   │                           │   │       ├── UiInspectorEvent.class
+    │   │                           │   │       ├── UiInspectorUiState.class
+    │   │                           │   │       ├── UiInspectorViewModel$1$2.class
+    │   │                           │   │       ├── UiInspectorViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── UiInspectorViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$fetchCurrentFragment$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$refreshInternal$1$activityDeferred$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$refreshInternal$1$fragmentDeferred$1.class
+    │   │                           │   │       ├── UiInspectorViewModel$refreshInternal$1.class
+    │   │                           │   │       └── UiInspectorViewModel.class
+    │   │                           │   ├── lifecycle
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── LifecycleEvent$Refresh.class
+    │   │                           │   │       ├── LifecycleEvent.class
+    │   │                           │   │       ├── LifecycleUiState.class
+    │   │                           │   │       ├── LifecycleViewModel$1$2.class
+    │   │                           │   │       ├── LifecycleViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── LifecycleViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── LifecycleViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── LifecycleViewModel$1.class
+    │   │                           │   │       ├── LifecycleViewModel$refreshInternal$1.class
+    │   │                           │   │       └── LifecycleViewModel.class
+    │   │                           │   ├── media
+    │   │                           │   │   ├── data
+    │   │                           │   │   │   └── MediaRepository.class
+    │   │                           │   │   ├── domain
+    │   │                           │   │   │   ├── MediaContentType.class
+    │   │                           │   │   │   ├── MediaItem.class
+    │   │                           │   │   │   └── MediaSourceType.class
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── MediaEvent$Refresh.class
+    │   │                           │   │       ├── MediaEvent$SetContentType.class
+    │   │                           │   │       ├── MediaEvent$SetSearchQuery.class
+    │   │                           │   │       ├── MediaEvent$SetSourceType.class
+    │   │                           │   │       ├── MediaEvent$ToggleOriginal.class
+    │   │                           │   │       ├── MediaEvent.class
+    │   │                           │   │       ├── MediaUiState.class
+    │   │                           │   │       ├── MediaViewModel$1$2.class
+    │   │                           │   │       ├── MediaViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── MediaViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── MediaViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── MediaViewModel$1.class
+    │   │                           │   │       ├── MediaViewModel$refreshInternal$1$WhenMappings.class
+    │   │                           │   │       ├── MediaViewModel$refreshInternal$1.class
+    │   │                           │   │       └── MediaViewModel.class
+    │   │                           │   ├── messages
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── MessagesEvent$Refresh.class
+    │   │                           │   │       ├── MessagesEvent$SetSearchQuery.class
+    │   │                           │   │       ├── MessagesEvent$ToggleOriginal.class
+    │   │                           │   │       ├── MessagesEvent.class
+    │   │                           │   │       ├── MessagesUiState$Companion.class
+    │   │                           │   │       ├── MessagesUiState$special$$inlined$sortedBy$1.class
+    │   │                           │   │       ├── MessagesUiState.class
+    │   │                           │   │       ├── MessagesViewModel$1$2.class
+    │   │                           │   │       ├── MessagesViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── MessagesViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── MessagesViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── MessagesViewModel$1.class
+    │   │                           │   │       ├── MessagesViewModel$refreshInternal$1.class
+    │   │                           │   │       └── MessagesViewModel.class
+    │   │                           │   ├── notification
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── NotificationEvent$Refresh.class
+    │   │                           │   │       ├── NotificationEvent$SetSearchQuery.class
+    │   │                           │   │       ├── NotificationEvent.class
+    │   │                           │   │       ├── NotificationUiState.class
+    │   │                           │   │       ├── NotificationViewModel$1$2.class
+    │   │                           │   │       ├── NotificationViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── NotificationViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── NotificationViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── NotificationViewModel$1.class
+    │   │                           │   │       ├── NotificationViewModel$refreshInternal$1.class
+    │   │                           │   │       └── NotificationViewModel.class
+    │   │                           │   ├── settings
+    │   │                           │   │   ├── data
+    │   │                           │   │   │   ├── SettingsCategory.class
+    │   │                           │   │   │   ├── SettingsItem.class
+    │   │                           │   │   │   └── SettingsRegistry.class
+    │   │                           │   │   └── presentation
+    │   │                           │   │       ├── SettingsEvent$DismissMessage.class
+    │   │                           │   │       ├── SettingsEvent$OpenSetting.class
+    │   │                           │   │       ├── SettingsEvent$SelectCategory.class
+    │   │                           │   │       ├── SettingsEvent$SetSearchQuery.class
+    │   │                           │   │       ├── SettingsEvent.class
+    │   │                           │   │       ├── SettingsUiState.class
+    │   │                           │   │       ├── SettingsViewModel$1$2.class
+    │   │                           │   │       ├── SettingsViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │   │       ├── SettingsViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │   │       ├── SettingsViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │   │       ├── SettingsViewModel$1.class
+    │   │                           │   │       ├── SettingsViewModel$openSetting$1.class
+    │   │                           │   │       └── SettingsViewModel.class
+    │   │                           │   └── systemdetails
+    │   │                           │       └── presentation
+    │   │                           │           ├── DetailsTab.class
+    │   │                           │           ├── SystemDetailsEvent$Refresh.class
+    │   │                           │           ├── SystemDetailsEvent$SetSearchQuery.class
+    │   │                           │           ├── SystemDetailsEvent$SetTab.class
+    │   │                           │           ├── SystemDetailsEvent.class
+    │   │                           │           ├── SystemDetailsUiState$WhenMappings.class
+    │   │                           │           ├── SystemDetailsUiState.class
+    │   │                           │           ├── SystemDetailsViewModel$1$2.class
+    │   │                           │           ├── SystemDetailsViewModel$1$invokeSuspend$$inlined$map$1$2$1.class
+    │   │                           │           ├── SystemDetailsViewModel$1$invokeSuspend$$inlined$map$1$2.class
+    │   │                           │           ├── SystemDetailsViewModel$1$invokeSuspend$$inlined$map$1.class
+    │   │                           │           ├── SystemDetailsViewModel$1.class
+    │   │                           │           ├── SystemDetailsViewModel$ListResult.class
+    │   │                           │           ├── SystemDetailsViewModel$fetchList$1.class
+    │   │                           │           ├── SystemDetailsViewModel$refreshInternal$1.class
+    │   │                           │           └── SystemDetailsViewModel.class
+    │   │                           ├── navigation
+    │   │                           │   ├── AppScreen.class
+    │   │                           │   ├── Screen$Apps.class
+    │   │                           │   ├── Screen$Battery.class
+    │   │                           │   ├── Screen$Calendar.class
+    │   │                           │   ├── Screen$Companion.class
+    │   │                           │   ├── Screen$Contacts.class
+    │   │                           │   ├── Screen$DebugInfo.class
+    │   │                           │   ├── Screen$DeviceProperties.class
+    │   │                           │   ├── Screen$DeviceSettings.class
+    │   │                           │   ├── Screen$Devices.class
+    │   │                           │   ├── Screen$Lifecycle.class
+    │   │                           │   ├── Screen$Media.class
+    │   │                           │   ├── Screen$Messages.class
+    │   │                           │   ├── Screen$Notifications.class
+    │   │                           │   ├── Screen$Settings.class
+    │   │                           │   ├── Screen$SystemDetails.class
+    │   │                           │   ├── Screen$UiInspector.class
+    │   │                           │   └── Screen.class
+    │   │                           ├── platform
+    │   │                           │   ├── PlatformFiles_jvmKt.class
+    │   │                           │   └── PlatformImage_jvmKt.class
+    │   │                           ├── theme
+    │   │                           │   ├── AdbStudioThemeKt$WhenMappings.class
+    │   │                           │   ├── AdbStudioThemeKt.class
+    │   │                           │   └── ThemeMode.class
+    │   │                           └── ui
+    │   │                               ├── component
+    │   │                               │   ├── ComposableSingletons$ErrorDialogKt.class
+    │   │                               │   ├── ErrorDialogKt.class
+    │   │                               │   ├── SplitViewKt$SplitView$1$1$2$1.class
+    │   │                               │   └── SplitViewKt.class
+    │   │                               └── screen
+    │   │                                   ├── AppsScreenKt$AppsScreen$1$1$5$1$2$1$1.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$1$1$5$1$2$2$1.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$1$1$5$1$2$3.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$1$1$5$1$2$4.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$1$1$5$1$2$5.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$lambda$10$0$4$0$$inlined$items$default$1.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$lambda$10$0$4$0$$inlined$items$default$2.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$lambda$10$0$4$0$$inlined$items$default$3.class
+    │   │                                   ├── AppsScreenKt$AppsScreen$lambda$10$0$4$0$$inlined$items$default$4.class
+    │   │                                   ├── AppsScreenKt$PathsTab$2$1$1$1.class
+    │   │                                   ├── AppsScreenKt$PathsTab$lambda$1$0$$inlined$items$default$1.class
+    │   │                                   ├── AppsScreenKt$PathsTab$lambda$1$0$$inlined$items$default$2.class
+    │   │                                   ├── AppsScreenKt$PathsTab$lambda$1$0$$inlined$items$default$3.class
+    │   │                                   ├── AppsScreenKt$PathsTab$lambda$1$0$$inlined$items$default$4.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$2$1$1$2$1.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$2$1$1$2$2.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$lambda$2$0$0$$inlined$items$default$1.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$lambda$2$0$0$$inlined$items$default$2.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$lambda$2$0$0$$inlined$items$default$3.class
+    │   │                                   ├── AppsScreenKt$PermissionsTab$lambda$2$0$0$$inlined$items$default$4.class
+    │   │                                   ├── AppsScreenKt$WhenMappings.class
+    │   │                                   ├── AppsScreenKt.class
+    │   │                                   ├── BatteryScreenKt$BatteryScreen$lambda$1$1$0$0$0$$inlined$items$default$1.class
+    │   │                                   ├── BatteryScreenKt$BatteryScreen$lambda$1$1$0$0$0$$inlined$items$default$2.class
+    │   │                                   ├── BatteryScreenKt$BatteryScreen$lambda$1$1$0$0$0$$inlined$items$default$3.class
+    │   │                                   ├── BatteryScreenKt$BatteryScreen$lambda$1$1$0$0$0$$inlined$items$default$4.class
+    │   │                                   ├── BatteryScreenKt.class
+    │   │                                   ├── CalendarScreenKt$CalendarTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── CalendarScreenKt$CalendarTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── CalendarScreenKt$CalendarTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── CalendarScreenKt.class
+    │   │                                   ├── ComposableSingletons$AppsScreenKt.class
+    │   │                                   ├── ComposableSingletons$CalendarScreenKt.class
+    │   │                                   ├── ComposableSingletons$ContactsScreenKt.class
+    │   │                                   ├── ComposableSingletons$DevicePropertiesScreenKt.class
+    │   │                                   ├── ComposableSingletons$DeviceSettingsScreenKt.class
+    │   │                                   ├── ComposableSingletons$MediaScreenKt.class
+    │   │                                   ├── ComposableSingletons$MessagesScreenKt.class
+    │   │                                   ├── ComposableSingletons$SettingsScreenKt.class
+    │   │                                   ├── ComposableSingletons$SystemDetailsScreenKt.class
+    │   │                                   ├── ComposableSingletons$UiInspectorScreenKt.class
+    │   │                                   ├── ContactsScreenKt$ContactsDetailPanel$lambda$2$0$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── ContactsScreenKt$ContactsDetailPanel$lambda$2$0$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── ContactsScreenKt$ContactsDetailPanel$lambda$2$0$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$1$3$1$2$1$1.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$1$3$1$2$2.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$1$3$1$2$3.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$1$3$1$2$4.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$lambda$0$2$0$$inlined$items$default$1.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$lambda$0$2$0$$inlined$items$default$2.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$lambda$0$2$0$$inlined$items$default$3.class
+    │   │                                   ├── ContactsScreenKt$ContactsListPanel$lambda$0$2$0$$inlined$items$default$4.class
+    │   │                                   ├── ContactsScreenKt.class
+    │   │                                   ├── DebugInfoScreenKt.class
+    │   │                                   ├── DevicePropertiesScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── DevicePropertiesScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── DevicePropertiesScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── DevicePropertiesScreenKt.class
+    │   │                                   ├── DeviceSettingsScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── DeviceSettingsScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── DeviceSettingsScreenKt$KeyValueTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── DeviceSettingsScreenKt.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$1$2$3$1$2$1$1.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$1$2$3$1$2$2.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$1$2$3$1$2$3.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$1$2$3$1$2$4.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$lambda$1$1$2$0$$inlined$items$default$1.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$lambda$1$1$2$0$$inlined$items$default$2.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$lambda$1$1$2$0$$inlined$items$default$3.class
+    │   │                                   ├── DevicesPageKt$DevicesPage$lambda$1$1$2$0$$inlined$items$default$4.class
+    │   │                                   ├── DevicesPageKt.class
+    │   │                                   ├── LifecycleScreenKt$LifecycleScreen$lambda$1$1$0$0$$inlined$items$default$1.class
+    │   │                                   ├── LifecycleScreenKt$LifecycleScreen$lambda$1$1$0$0$$inlined$items$default$2.class
+    │   │                                   ├── LifecycleScreenKt$LifecycleScreen$lambda$1$1$0$0$$inlined$items$default$3.class
+    │   │                                   ├── LifecycleScreenKt$LifecycleScreen$lambda$1$1$0$0$$inlined$items$default$4.class
+    │   │                                   ├── LifecycleScreenKt.class
+    │   │                                   ├── MediaScreenKt$MediaTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── MediaScreenKt$MediaTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── MediaScreenKt$MediaTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── MediaScreenKt.class
+    │   │                                   ├── MessagesScreenKt$MessagesTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── MessagesScreenKt$MessagesTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── MessagesScreenKt$MessagesTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── MessagesScreenKt.class
+    │   │                                   ├── NotificationScreenKt$NotificationScreen$lambda$1$4$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── NotificationScreenKt$NotificationScreen$lambda$1$4$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── NotificationScreenKt$NotificationScreen$lambda$1$4$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── NotificationScreenKt.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$1$1$1$1$1$1.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$1$1$1$1$2.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$1$1$1$1$3.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$1$1$1$1$4.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$lambda$0$0$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$lambda$0$0$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── SettingsScreenKt$CategoryPanel$lambda$0$0$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$1$3$1$2$1$1.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$1$3$1$2$2.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$1$3$1$2$3.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$lambda$0$2$0$$inlined$items$default$1.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$lambda$0$2$0$$inlined$items$default$2.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$lambda$0$2$0$$inlined$items$default$3.class
+    │   │                                   ├── SettingsScreenKt$SettingsItemsPanel$lambda$0$2$0$$inlined$items$default$4.class
+    │   │                                   ├── SettingsScreenKt.class
+    │   │                                   ├── SystemDetailsScreenKt$SingleColumnTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$1.class
+    │   │                                   ├── SystemDetailsScreenKt$SingleColumnTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$2.class
+    │   │                                   ├── SystemDetailsScreenKt$SingleColumnTable$lambda$0$0$1$0$$inlined$itemsIndexed$default$3.class
+    │   │                                   ├── SystemDetailsScreenKt.class
+    │   │                                   ├── UiInspectorScreenKt$NodeRow$1$1.class
+    │   │                                   ├── UiInspectorScreenKt$ScreenshotOverlayPanel$1$2$3$1.class
+    │   │                                   ├── UiInspectorScreenKt$XmlTreePanel$1$2$1$2$1$1.class
+    │   │                                   ├── UiInspectorScreenKt$XmlTreePanel$lambda$0$1$0$$inlined$items$default$1.class
+    │   │                                   ├── UiInspectorScreenKt$XmlTreePanel$lambda$0$1$0$$inlined$items$default$2.class
+    │   │                                   ├── UiInspectorScreenKt$XmlTreePanel$lambda$0$1$0$$inlined$items$default$3.class
+    │   │                                   ├── UiInspectorScreenKt$XmlTreePanel$lambda$0$1$0$$inlined$items$default$4.class
+    │   │                                   └── UiInspectorScreenKt.class
+    │   ├── generated
+    │   │   └── compose
+    │   │       └── resourceGenerator
+    │   │           ├── assembledResources
+    │   │           │   └── jvmMain
+    │   │           │       └── composeResources
+    │   │           │           └── adbstudio.shared.generated.resources
+    │   │           │               └── drawable
+    │   │           │                   └── compose-multiplatform.xml
+    │   │           ├── kotlin
+    │   │           │   ├── commonMainResourceAccessors
+    │   │           │   │   └── adbstudio
+    │   │           │   │       └── shared
+    │   │           │   │           └── generated
+    │   │           │   │               └── resources
+    │   │           │   │                   └── Drawable0.commonMain.kt
+    │   │           │   ├── commonMainResourceCollectors
+    │   │           │   │   └── adbstudio
+    │   │           │   │       └── shared
+    │   │           │   │           └── generated
+    │   │           │   │               └── resources
+    │   │           │   │                   └── ExpectResourceCollectors.kt
+    │   │           │   ├── commonResClass
+    │   │           │   │   └── adbstudio
+    │   │           │   │       └── shared
+    │   │           │   │           └── generated
+    │   │           │   │               └── resources
+    │   │           │   │                   └── Res.kt
+    │   │           │   └── jvmMainResourceCollectors
+    │   │           │       └── adbstudio
+    │   │           │           └── shared
+    │   │           │               └── generated
+    │   │           │                   └── resources
+    │   │           │                       └── ActualResourceCollectors.kt
+    │   │           └── preparedResources
+    │   │               └── commonMain
+    │   │                   └── composeResources
+    │   │                       └── drawable
+    │   │                           └── compose-multiplatform.xml
+    │   ├── kotlin
+    │   │   └── compileKotlinJvm
+    │   │       ├── cacheable
+    │   │       │   ├── caches-jvm
+    │   │       │   │   ├── compilerPluginFiles
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab.keystream
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab.keystream.len
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab.len
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab.values.at
+    │   │       │   │   │   ├── outputs-generated-for-plugins.tab_i.len
+    │   │       │   │   │   ├── sources-referenced-by-plugins.tab
+    │   │       │   │   │   ├── sources-referenced-by-plugins.tab.keystream
+    │   │       │   │   │   ├── sources-referenced-by-plugins.tab.keystream.len
+    │   │       │   │   │   ├── sources-referenced-by-plugins.tab.len
+    │   │       │   │   │   ├── sources-referenced-by-plugins.tab.values.at
+    │   │       │   │   │   └── sources-referenced-by-plugins.tab_i.len
+    │   │       │   │   ├── inputs
+    │   │       │   │   │   ├── source-to-output.tab
+    │   │       │   │   │   ├── source-to-output.tab.keystream
+    │   │       │   │   │   ├── source-to-output.tab.keystream.len
+    │   │       │   │   │   ├── source-to-output.tab.len
+    │   │       │   │   │   ├── source-to-output.tab.values
+    │   │       │   │   │   ├── source-to-output.tab.values.at
+    │   │       │   │   │   ├── source-to-output.tab.values.s
+    │   │       │   │   │   ├── source-to-output.tab_i
+    │   │       │   │   │   └── source-to-output.tab_i.len
+    │   │       │   │   ├── jvm
+    │   │       │   │   │   └── kotlin
+    │   │       │   │   │       ├── class-attributes.tab
+    │   │       │   │   │       ├── class-attributes.tab.keystream
+    │   │       │   │   │       ├── class-attributes.tab.keystream.len
+    │   │       │   │   │       ├── class-attributes.tab.len
+    │   │       │   │   │       ├── class-attributes.tab.values.at
+    │   │       │   │   │       ├── class-attributes.tab_i
+    │   │       │   │   │       ├── class-attributes.tab_i.len
+    │   │       │   │   │       ├── class-fq-name-to-source.tab
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.keystream
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.keystream.len
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.len
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.values
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.values.at
+    │   │       │   │   │       ├── class-fq-name-to-source.tab.values.s
+    │   │       │   │   │       ├── class-fq-name-to-source.tab_i
+    │   │       │   │   │       ├── class-fq-name-to-source.tab_i.len
+    │   │       │   │   │       ├── complementary-files.tab
+    │   │       │   │   │       ├── complementary-files.tab.keystream
+    │   │       │   │   │       ├── complementary-files.tab.keystream.len
+    │   │       │   │   │       ├── complementary-files.tab.len
+    │   │       │   │   │       ├── complementary-files.tab.values.at
+    │   │       │   │   │       ├── complementary-files.tab_i
+    │   │       │   │   │       ├── complementary-files.tab_i.len
+    │   │       │   │   │       ├── constants.tab
+    │   │       │   │   │       ├── constants.tab.keystream
+    │   │       │   │   │       ├── constants.tab.keystream.len
+    │   │       │   │   │       ├── constants.tab.len
+    │   │       │   │   │       ├── constants.tab.values.at
+    │   │       │   │   │       ├── constants.tab_i
+    │   │       │   │   │       ├── constants.tab_i.len
+    │   │       │   │   │       ├── internal-name-to-source.tab
+    │   │       │   │   │       ├── internal-name-to-source.tab.keystream
+    │   │       │   │   │       ├── internal-name-to-source.tab.keystream.len
+    │   │       │   │   │       ├── internal-name-to-source.tab.len
+    │   │       │   │   │       ├── internal-name-to-source.tab.values
+    │   │       │   │   │       ├── internal-name-to-source.tab.values.at
+    │   │       │   │   │       ├── internal-name-to-source.tab.values.s
+    │   │       │   │   │       ├── internal-name-to-source.tab_i
+    │   │       │   │   │       ├── internal-name-to-source.tab_i.len
+    │   │       │   │   │       ├── package-parts.tab
+    │   │       │   │   │       ├── package-parts.tab.keystream
+    │   │       │   │   │       ├── package-parts.tab.keystream.len
+    │   │       │   │   │       ├── package-parts.tab.len
+    │   │       │   │   │       ├── package-parts.tab.values.at
+    │   │       │   │   │       ├── package-parts.tab_i
+    │   │       │   │   │       ├── package-parts.tab_i.len
+    │   │       │   │   │       ├── proto.tab
+    │   │       │   │   │       ├── proto.tab.keystream
+    │   │       │   │   │       ├── proto.tab.keystream.len
+    │   │       │   │   │       ├── proto.tab.len
+    │   │       │   │   │       ├── proto.tab.values
+    │   │       │   │   │       ├── proto.tab.values.at
+    │   │       │   │   │       ├── proto.tab.values.s
+    │   │       │   │   │       ├── proto.tab_i
+    │   │       │   │   │       ├── proto.tab_i.len
+    │   │       │   │   │       ├── source-to-classes.tab
+    │   │       │   │   │       ├── source-to-classes.tab.keystream
+    │   │       │   │   │       ├── source-to-classes.tab.keystream.len
+    │   │       │   │   │       ├── source-to-classes.tab.len
+    │   │       │   │   │       ├── source-to-classes.tab.values
+    │   │       │   │   │       ├── source-to-classes.tab.values.at
+    │   │       │   │   │       ├── source-to-classes.tab.values.s
+    │   │       │   │   │       ├── source-to-classes.tab_i
+    │   │       │   │   │       ├── source-to-classes.tab_i.len
+    │   │       │   │   │       ├── subtypes.tab
+    │   │       │   │   │       ├── subtypes.tab.keystream
+    │   │       │   │   │       ├── subtypes.tab.keystream.len
+    │   │       │   │   │       ├── subtypes.tab.len
+    │   │       │   │   │       ├── subtypes.tab.values.at
+    │   │       │   │   │       ├── subtypes.tab_i
+    │   │       │   │   │       ├── subtypes.tab_i.len
+    │   │       │   │   │       ├── supertypes.tab
+    │   │       │   │   │       ├── supertypes.tab.keystream
+    │   │       │   │   │       ├── supertypes.tab.keystream.len
+    │   │       │   │   │       ├── supertypes.tab.len
+    │   │       │   │   │       ├── supertypes.tab.values.at
+    │   │       │   │   │       ├── supertypes.tab_i
+    │   │       │   │   │       └── supertypes.tab_i.len
+    │   │       │   │   └── lookups
+    │   │       │   │       ├── counters.tab
+    │   │       │   │       ├── file-to-id.tab
+    │   │       │   │       ├── file-to-id.tab.keystream
+    │   │       │   │       ├── file-to-id.tab.keystream.len
+    │   │       │   │       ├── file-to-id.tab.len
+    │   │       │   │       ├── file-to-id.tab.values.at
+    │   │       │   │       ├── file-to-id.tab_i
+    │   │       │   │       ├── file-to-id.tab_i.len
+    │   │       │   │       ├── id-to-file.tab
+    │   │       │   │       ├── id-to-file.tab.keystream
+    │   │       │   │       ├── id-to-file.tab.keystream.len
+    │   │       │   │       ├── id-to-file.tab.len
+    │   │       │   │       ├── id-to-file.tab.values.at
+    │   │       │   │       ├── id-to-file.tab_i
+    │   │       │   │       ├── id-to-file.tab_i.len
+    │   │       │   │       ├── lookups.tab
+    │   │       │   │       ├── lookups.tab.keystream
+    │   │       │   │       ├── lookups.tab.keystream.len
+    │   │       │   │       ├── lookups.tab.len
+    │   │       │   │       ├── lookups.tab.values
+    │   │       │   │       ├── lookups.tab.values.at
+    │   │       │   │       ├── lookups.tab.values.s
+    │   │       │   │       ├── lookups.tab_i
+    │   │       │   │       └── lookups.tab_i.len
+    │   │       │   └── last-build.bin
+    │   │       ├── classpath-snapshot
+    │   │       │   └── shrunk-classpath-snapshot.bin
+    │   │       └── local-state
+    │   ├── libs
+    │   │   └── shared-jvm.jar
+    │   ├── processedResources
+    │   │   └── jvm
+    │   │       └── main
+    │   │           ├── adb
+    │   │           │   ├── platform-tools-linux.zip
+    │   │           │   ├── platform-tools-macos.zip
+    │   │           │   └── platform-tools-windows.zip
+    │   │           └── composeResources
+    │   │               └── adbstudio.shared.generated.resources
+    │   │                   └── drawable
+    │   │                       └── compose-multiplatform.xml
+    │   └── tmp
+    │       └── jvmJar
+    │           └── MANIFEST.MF
+    ├── build.gradle.kts
+    └── src
+        ├── commonMain
+        │   ├── composeResources
+        │   │   └── drawable
+        │   │       └── compose-multiplatform.xml
+        │   └── kotlin
+        │       └── com
+        │           └── adbstudio
+        │               └── desktop

@@ -547,7 +547,7 @@ fun main() = application {
     startKoin { modules(appModules) }
 
     var themeMode by remember { mutableStateOf(ThemeMode.System) }
-    var navigationItem by remember { mutableStateOf(NavigationItem.Apps) }
+    var navigationItem by remember { mutableStateOf(Screen.Apps) }
 
     // ... Window, MenuBar, content
 }
@@ -555,7 +555,7 @@ fun main() = application {
 
 **Rules:**
 - `mutableStateOf` at window scope is allowed — mutations happen on Swing EDT (main thread).
-- Navigation state (`NavigationItem`) and theme state are owned by `main()`, not injected.
+- Navigation state (`Screen`) and theme state are owned by `main()`, not injected.
 - `DisposableEffect(Unit)` at window scope for starting/stopping repositories and cancelling VM scopes.
 - Koin `startKoin` must be called once in `main()`, not inside composables.
 

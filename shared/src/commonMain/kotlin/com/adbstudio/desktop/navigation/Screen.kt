@@ -30,12 +30,16 @@ sealed class Screen(
     data object Messages : Screen("Messages")
     data object Notifications : Screen("Notifications")
     data object Lifecycle : Screen("Lifecycle")
+    data object DeviceSettings : Screen("Device Settings")
+    data object DeviceProperties : Screen("Device Properties")
+    data object SystemDetails : Screen("System Details")
 
     companion object {
         /** All available screens for command palette registration. */
         val entries: List<Screen> = listOf(
             Devices, Apps, Battery, DebugInfo, Settings, UiInspector,
             Calendar, Contacts, Media, Messages, Notifications, Lifecycle,
+            DeviceSettings, DeviceProperties, SystemDetails,
         )
     }
 }

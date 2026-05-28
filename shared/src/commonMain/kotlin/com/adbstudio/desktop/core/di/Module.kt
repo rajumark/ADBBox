@@ -17,8 +17,11 @@ import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
 import com.adbstudio.desktop.feature.media.data.MediaRepository
 import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
 import com.adbstudio.desktop.feature.messages.presentation.MessagesViewModel
+import com.adbstudio.desktop.feature.devicesettings.presentation.DeviceSettingsViewModel
+import com.adbstudio.desktop.feature.deviceproperties.presentation.DevicePropertiesViewModel
 import com.adbstudio.desktop.feature.notification.presentation.NotificationViewModel
 import com.adbstudio.desktop.feature.settings.presentation.SettingsViewModel
+import com.adbstudio.desktop.feature.systemdetails.presentation.SystemDetailsViewModel
 import org.koin.dsl.module
 
 val coreModule = module {
@@ -77,6 +80,18 @@ val uiInspectorModule = module {
     single { UiInspectorViewModel(get(), get()) }
 }
 
+val deviceSettingsModule = module {
+    single { DeviceSettingsViewModel(get(), get()) }
+}
+
+val devicePropertiesModule = module {
+    single { DevicePropertiesViewModel(get(), get()) }
+}
+
+val systemDetailsModule = module {
+    single { SystemDetailsViewModel(get(), get()) }
+}
+
 val appModules = listOf(
     coreModule,
     adbModule,
@@ -91,4 +106,7 @@ val appModules = listOf(
     messagesModule,
     notificationModule,
     uiInspectorModule,
+    deviceSettingsModule,
+    devicePropertiesModule,
+    systemDetailsModule,
 )
