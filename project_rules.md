@@ -1,6 +1,6 @@
 # ADBStudio — Project Rules & Architecture
 
-> Rules for a 1000+ command, 400+ screen Compose Desktop ADB tool. M3 UI rules are in §14.
+> Rules for a 1000+ command, 400+ screen Compose Desktop ADB tool. M3 UI rules in §16.
 
 ---
 
@@ -91,13 +91,32 @@ sealed interface AdbOutput<out T> {
     data class Success<T>(val value: T) : AdbOutput<T>
     data class Error(val reason: AdbError) : AdbOutput<Nothing>
 }
+
+// Streaming commands (logcat, top, screenrecord, tcpdump) — not request/response
+interface StreamingAdbCommand<T> : AdbCommand<T> {
+    fun stream(): Flow<T>
+}
+```
+
+**Command Metadata** (powers palette, docs, warnings, filtering):
+```kotlin
+data class CommandMetadata(
+    val id: String,
+    val category: CommandCategory,
+    val dangerous: Boolean = false,
+    val requiresRoot: Boolean = false,
+    val minApi: Int? = null,
+    val supportsStreaming: Boolean = false,
+)
 ```
 
 **Rules:**
 - Every command defines its own **input type** (parameters) and **output type** (parsed result).
 - One parser per command — parser is a pure function `(String) -> AdbOutput<T>`.
+- Each command carries a `CommandMetadata` — registered at startup in a `Map<String, CommandMetadata>`.
 - Commands never call ADB directly — they go through `AdbExecutor` (single point of execution).
 - `AdbExecutor` handles: timeout enforcement, cancellation, retry, output capture.
+- Streaming commands use `callbackFlow` or `channelFlow` with backpressure — never unbounded emission.
 - All serial communication is in `jvmMain` via `ProcessBuilder` directly (no `expect/actual` — this is JVM-only).
 
 **For 1000+ commands:**
@@ -134,9 +153,29 @@ User Action → ViewModel.onEvent(event) → UseCase.run() → AdbExecutor.run(c
 
 **Rules:**
 - Every screen has a single `UiState` data class (immutable).
-- One `ViewModel` per screen, exposing `StateFlow<UiState>`.
+- **Feature-scoped ViewModels** — not one-per-screen. For tooling apps with tabs/docking, `LogcatWorkspaceViewModel` outlives individual logcat tabs. This avoids explosion when screens become reusable panels.
+- ViewModels expose `StateFlow<UiState>` (or `mutableStateOf` on main thread, see nuance below).
 - UI sends events via sealed class — no mutable state in composables.
 - ViewModels use `viewModelScope` from lifecycle — auto-cancels on dispose.
+
+**Event Bus (cross-feature communication at scale):**
+- At 400+ screens, direct feature-to-feature imports create coupling.
+- Use a shared `EventBus` for app-wide events:
+
+```kotlin
+sealed interface AppEvent {
+    data class DeviceConnected(val device: DeviceInfo) : AppEvent
+    data class DeviceDisconnected(val serial: String) : AppEvent
+    data object AdbPathChanged : AppEvent
+}
+
+interface EventBus {
+    suspend fun publish(event: AppEvent)
+    fun events(): Flow<AppEvent>
+}
+```
+
+- Features subscribe to relevant events — never import each other's ViewModels.
 
 **Split state for high-frequency screens:**
 - On high-throughput screens (logcat at 60Hz, real-time perf monitors), a single `UiState` class triggers full-screen recomposition on every update.
@@ -191,7 +230,42 @@ sealed interface DeviceListEvent {
 
 ---
 
-## 6. Error Model (Standardized)
+## 6. Background Task Manager
+
+ADB operations like install, pull, screenrecord, bugreport are long-running. Without a central manager, cancellation, progress, and lifecycle leak everywhere.
+
+```kotlin
+sealed interface TaskState {
+    data object Queued : TaskState
+    data object Running : TaskState
+    data class Progress(val percent: Float, val message: String = "") : TaskState
+    data object Completed : TaskState
+    data class Failed(val error: AppError) : TaskState
+}
+
+interface TaskManager {
+    suspend fun submit(task: AdbTask): TaskHandle
+    fun activeTasks(serial: String?): Flow<List<TaskHandle>>
+    fun observe(taskId: String): StateFlow<TaskState>
+}
+
+interface TaskHandle {
+    val id: String
+    val description: String
+    val state: StateFlow<TaskState>
+    fun cancel()
+}
+```
+
+**Rules:**
+- Every long-running ADB operation (`install`, `pull`, `push`, `screenrecord`, `bugreport`) goes through `TaskManager`.
+- Tasks auto-cancel when the target device disconnects.
+- UI shows task progress in a status bar or notification center.
+- `TaskManager` caps concurrent tasks per device (default 3).
+
+---
+
+## 7. Error Model (Standardized)
 
 ```kotlin
 // core/error/AppError.kt
@@ -213,7 +287,7 @@ sealed interface AppError {
 
 ---
 
-## 7. Navigation System
+## 8. Navigation System
 
 ```
 FeatureNavigationProvider → navStack: List<AppScreen> → current: AppScreen
@@ -243,10 +317,43 @@ sealed class LogcatScreen : AppScreen {
 - Command palette (Ctrl+P) discovers all screens via this registry.
 - Back stack stored as `List<AppScreen>` in a `NavigationViewModel`.
 - Navigation is pure state machine — no 3rd-party libs.
+- **Workspace/docking note:** A nav stack alone won't support split panes, tab groups, or floating inspectors. Design `Screen` as a reusable `WorkspaceNode` that can live in tabs, splits, or panels. Layout = tree of `WorkspaceNode` (Split | Tabs | Panel). Don't bake single-screen assumptions into the navigation model.
 
 ---
 
-## 8. Performance & Memory
+## 9. Device Session & Capability System
+
+ADB queries are expensive. Repeated `getprop`, `dumpsys`, and `pm` calls tank performance. Cache device state in a session object:
+
+```kotlin
+class DeviceSession(
+    val serial: String,
+    val apiLevel: Int,
+    val features: Set<DeviceCapability>,
+    val connectionType: ConnectionType,
+    val cachedProperties: Map<String, String>,
+    val activeJobs: List<TaskHandle>,
+) {
+    fun supports(capability: DeviceCapability): Boolean
+}
+
+sealed interface DeviceCapability {
+    data object WirelessDebugging : DeviceCapability
+    data object IncrementalInstall : DeviceCapability
+    data object ScreenRecording : DeviceCapability
+    data object RootAccess : DeviceCapability
+}
+```
+
+**Rules:**
+- `DeviceSession` is created on connection, invalidated on disconnect.
+- Capabilities replace `if (apiLevel >= 34)` scattered across features.
+- Session caches expensive ADB results (package list, battery info, props) with TTL.
+- `DeviceRepository` manages session lifecycle — features request sessions by serial.
+
+---
+
+## 10. Performance & Memory
 
 | Concern | Practice |
 |---------|----------|
@@ -263,7 +370,7 @@ sealed class LogcatScreen : AppScreen {
 
 ---
 
-## 9. DI Architecture (Koin)
+## 11. DI Architecture (Koin)
 
 ```kotlin
 // Each feature module has its own Koin module
@@ -280,19 +387,19 @@ val sharedModules = listOf(
     deviceListModule,
     packageManagerModule,
     logcatModule,
-    // one per feature
+    // one per feature domain
 )
 ```
 
 **Rules:**
-- `single` for stateless services (executors, repositories).
-- `factory` for ViewModels (new instance per screen).
+- `single` for stateless services (executors, repositories, session caches).
+- `factory` for ViewModels (one per feature scope, not per screen instance).
 - No `CompositionLocal` for business logic — only for UI-level ambient state (theme).
 - Modules are composed at application entry point, not scattered.
 
 ---
 
-## 10. Testing Strategy
+## 12. Testing Strategy
 
 | Layer | What to Test | Tool |
 |-------|-------------|------|
@@ -300,7 +407,8 @@ val sharedModules = listOf(
 | **Parsers** | Parse known ADB output strings, malformed input, empty input | kotlin.test |
 | **Use Cases** | Business logic with mocked repository | kotlin.test + Turbine |
 | **ViewModels** | State transitions given events, error scenarios | kotlin.test + Turbine |
-| **UI** | Screen renders without crash (smoke test) | Compose UI Test (skiko) |
+| **Parsers (API matrix)** | Test against output samples from Android 9, 11, 14, 16 | kotlin.test |
+| **UI** | Smoke test screens render without crash | Compose UI Test (skiko) |
 
 **Rules:**
 - Parser tests are **most valuable** — write them first for every command.
@@ -310,31 +418,60 @@ val sharedModules = listOf(
 
 ---
 
-## 11. Development Workflow (AI-Assisted)
+## 13. Development Workflow (AI-Assisted)
 
 | Principle | Practice |
 |-----------|----------|
 | **Define first, implement later** | Write `AdbCommand` + parser test + `UiState` before any composable. |
-| **One command → one PR** | Each command is: model → parser → use case → vm → screen. |
+| **One command → one unit** | Each command is: model → parser → use case → vm → screen. |
 | **Always leave tests** | AI must generate tests for every new parser/command. |
 | **Follow existing pattern** | For a new feature, copy the closest existing feature folder structure. |
-| **Keep files small** | Max 200 lines per file. Split large features into multiple files. |
+| **Split by responsibility** | No arbitrary line limit — split files when they do more than one thing. |
 | **No experimental APIs** | Only stable Compose/Kotlin APIs. No `@ExperimentalMaterial3Api` unless unavoidable. |
 
+**Structured logging (add now, pay off later):**
+```kotlin
+logger.info("adb_command_executed", mapOf(
+    "serial" to serial, "command" to command.id,
+    "durationMs" to duration, "success" to true,
+))
+```
+Use correlation IDs per operation. Enables debugging, telemetry, crash analysis, AI assistance.
+
+**AI integration boundary (future-proof):**
+```kotlin
+interface AiTool {
+    val id: String
+    suspend fun execute(input: JsonObject): JsonObject
+}
+```
+Expose ADB commands, device queries, logcat search, screenshots as `AiTool` implementations. Local AI agents interact through this boundary — safe, typed, auditable.
+
 ---
 
-## 12. Scalability Rules (for 1000+ commands)
+## 14. Scalability Rules (for 1000+ commands)
 
-1. **Command registry** — all 1000+ commands registered at startup in a `Map<String, AdbCommandFactory>`. Enables command palette, search, discovery.
-2. **Lazy feature loading** — features are loaded on navigation, not at startup. Use Koin `lazy` or `getLazy()`.
-3. **Consistent naming** — each command file matches its ADB command name: `PackageList.kt`, `DumpsysBattery.kt`, `SettingsGet.kt`.
-4. **Output schema versioning** — ADB output changes per Android API level. Use **Strategy Pattern** (see §3): versioned parsers selected by a factory based on target device API level.
-5. **Plugin-like addition** — adding a new command =: (a) create model file, (b) create parser, (c) register in command group module. No other file changes.
-6. **Command idempotency** — `AdbExecutor` tracks ongoing command executions per `(serial, commandKey)`. Rejects or queues duplicate destructive commands. Debounce rapid user clicks (300ms window).
+1. **Command metadata registry** — all commands registered at startup with `CommandMetadata` (see §3). Powers command palette, docs, warnings, filtering, AI tooling.
+2. **Lazy feature loading** — features loaded on navigation, not at startup. Koin `lazy` or `getLazy()`.
+3. **Consistent naming** — each command file matches its ADB command: `PackageList.kt`, `DumpsysBattery.kt`, `SettingsGet.kt`.
+4. **Output schema versioning** — ADB output changes per API level. Strategy Pattern (§3) with versioned parsers selected by target device API level.
+5. **Plugin-like addition** — new command =: (a) model file, (b) parser, (c) register in command group. No other file changes.
+6. **Command idempotency** — `AdbExecutor` tracks ongoing executions per `(serial, commandKey)`. Rejects duplicates. Debounce rapid clicks (300ms).
+
+**Internal plugin architecture:**
+```kotlin
+interface AdbStudioFeature {
+    val id: String
+    val routes: List<AppScreen>
+    val commands: List<CommandMetadata>
+    val koinModules: List<Module>
+}
+```
+Structure every feature as if it were a plugin. This enables feature isolation, lazy loading, optional modules, and enterprise/internal extensions without refactoring.
 
 ---
 
-## 13. What To Avoid
+## 15. What To Avoid
 
 | Anti-pattern | Instead |
 |-------------|---------|
@@ -349,61 +486,43 @@ val sharedModules = listOf(
 
 ---
 
-## 14. UI Rules — Material Design 3 (Strict Mode)
+## 16. UI Rules — Material Design 3 (Tooling-Grade)
 
 ### Philosophy
-Pure Google M3 with **zero custom UI**. Every component, color, type scale uses M3 defaults via `androidx.compose.material3`. No custom drawables, no overridden colors, no custom text sizes, no custom shapes. If M3 doesn't provide it out of the box, we don't add it.
+**M3 is the foundation, not a prison.** This is a power-user desktop tool (like Android Studio, IntelliJ, Wireshark), not a consumer mobile app. Use M3 defaults for standard chrome, but allow custom composables where M3 is insufficient for desktop tooling.
 
-### 14.1 Components
-- Use **only** `androidx.compose.material3.*` components.
-- No custom composables that wrap or re-style M3 components.
-- No custom `Button`, `TextField`, `Card`, `NavigationBar`, `TopAppBar`, `AlertDialog`, `ModalBottomSheet`, etc.
-- Each M3 component uses **default parameters only** — no overriding `colors`, `shape`, `typography`, or `elevation`.
-- Exception: functional parameters like `onClick`, `enabled`, `expanded`, `onDismiss` are allowed.
+### 16.1 Standard UI (M3 defaults required)
+- Buttons, text fields, dialogs, top bars, navigation bars, switches, sliders
+- Color scheme (`MaterialTheme.colorScheme.*`), typography scale (`MaterialTheme.typography.*`), shape system
+- Icons (material-icons-extended)
 
-### 14.2 Color
-- **Never** define custom `Color` values. Use only `MaterialTheme.colorScheme.*`.
-- Never pass custom colors to `Modifier.background()` or `Modifier.foreground()`.
-- Never override `colorScheme` in `MaterialTheme`.
+### 16.2 Custom Composables (Allowed Where Needed)
+Allowed for tooling-specific needs: data tables, dense log viewers, terminal output, split panes, tree explorers, property inspectors, device dashboards, virtualized lists, resizable panels, dockable windows, tab groups.
 
-### 14.3 Typography
-- **Never** define custom `TextStyle` or font sizes.
-- Use only `MaterialTheme.typography.*` styles (`bodyLarge`, `titleMedium`, `labelSmall`, etc.).
-- `Text` must use `style = MaterialTheme.typography.*` — no inline `fontSize`, `fontWeight`, or `lineHeight`.
-- Never override `typography` in `MaterialTheme`.
+**Rules for custom composables:**
+- Use `MaterialTheme.colorScheme.*` for colors and `MaterialTheme.typography.*` for text styles.
+- Never define custom `Color` values — use only `colorScheme` properties.
+- Never define custom `TextStyle` or font sizes — use only `typography` properties.
+- Never hardcode `dp` values outside the M3 spacing scale (`4, 8, 12, 16, 24`).
+- Wrapping M3 components for ergonomics is OK — no styling overrides in the wrapper.
 
-### 14.4 Spacing / Layout
-- Use only M3 reference sizes (`4.dp`, `8.dp`, `12.dp`, `16.dp`, `24.dp`).
-- No hardcoded custom `dp` values for margins/paddings.
-- Prefer `Modifier.sizeIn()`, `widthIn()`, `heightIn()` over fixed sizes.
-
-### 14.5 Icons
-- Use only `androidx.compose.material.icons.Icons.Default.*` or `material-icons-extended`.
-- No custom SVG/vector drawables. Icons must have `contentDescription` for accessibility.
-
-### 14.6 Shape
-- Never define custom `Shape` or `RoundedCornerShape`. Use only `MaterialTheme.shapes.*` (`small`, `medium`, `large`, `extraLarge`).
-
-### 14.7 Window
-- Default Compose Desktop window chrome (no custom title bar). Window size: `WindowState` with `DpSize(1200.dp, 800.dp)`.
-
-### 14.8 Naming
+### 16.3 Naming
 - **Files**: `PascalCase.kt` matching primary class/composable.
-- **Composables**: PascalCase, noun-based (`DeviceList`, `DeviceCard`).
-- **Functions**: camelCase, verb-based (`connectToDevice`, `fetchLogs`).
+- **Composables**: PascalCase, noun-based.
+- **Functions**: camelCase, verb-based.
 - **ViewModels**: `*ViewModel.kt`, expose `StateFlow` / `MutableStateFlow`.
-- **Screens**: `*Screen.kt` — full-page view composable.
+- **Screens**: `*Screen.kt` — full-page or panel view composable.
 
-### 14.9 UX Rules
-- Every screen uses `Scaffold` with a `TopAppBar` and optional `NavigationBar`.
+### 16.4 UX Rules
+- Use `Scaffold` with `TopAppBar` for primary screens. Panels/inspectors may opt out.
 - Navigation: state-driven (no 3rd-party nav libs).
-- Dialogs: M3 `AlertDialog` only — no custom dialog composables.
+- Dialogs: prefer M3 `AlertDialog` — custom dialogs allowed for complex tooling UIs.
 - Loading: M3 `LinearProgressIndicator` or `CircularProgressIndicator`.
-- Empty states: `Text` with `bodyLarge` style and brief message.
-- Error states: M3 `AlertDialog` or inline `Text(style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)`.
-- Confirm destructive actions with M3 `AlertDialog`.
+- Empty states: brief `Text` message.
+- Error states: dialog or inline text with `color = MaterialTheme.colorScheme.error`.
+- Confirm destructive actions.
 
-### 14.10 Code Conventions
+### 16.5 Code Conventions
 - No HTML-like comments (`//` or `/* */` only where necessary).
 - No `@Preview` in production code.
 - `remember` / `derivedStateOf` for local state; `collectAsState()` for ViewModel state.
@@ -411,22 +530,20 @@ Pure Google M3 with **zero custom UI**. Every component, color, type scale uses 
 - `withContext(Dispatchers.IO)` for blocking ADB operations.
 - Explicit M3 imports — no wildcard imports except `compose.material3.*`.
 
-### 14.11 ADB-Specific Conventions
+### 16.6 ADB-Specific Conventions
 - All ADB shell commands through a single abstraction in `adb/`.
 - Device connection state via `StateFlow` in `DeviceViewModel`.
-- Logcat in M3 `LazyColumn` with `Text(style = MaterialTheme.typography.bodySmall)`.
-- Device list uses M3 `LazyColumn` with `ListItem` or `Card`.
+- Logcat in `LazyColumn` with `reverseLayout = true` — M3 text styling for consistency.
+- Device list uses `LazyColumn` with M3 `ListItem` or `Card`.
 
-### 14.12 What We Do NOT Do
+### 16.7 What We Do NOT Do
 
 | Disallowed | Instead Use |
 |---|---|
-| Custom-colored buttons | `Button(colors = ButtonDefaults.buttonColors())` (default) |
-| Custom font sizes | `MaterialTheme.typography.*` |
-| Custom shapes | `MaterialTheme.shapes.*` |
+| Custom `Color` values | `MaterialTheme.colorScheme.*` |
+| Custom `TextStyle` / font sizes | `MaterialTheme.typography.*` |
+| Custom `Shape` / `RoundedCornerShape` | `MaterialTheme.shapes.*` |
 | Custom color palettes | `MaterialTheme.colorScheme.*` |
-| Custom text styles | `MaterialTheme.typography.*` |
-| Custom UI components | Built-in M3 composables only |
 | Third-party UI libraries | Not allowed |
 | Custom window chrome | Default OS window chrome |
 | Hardcoded colors | `Color.Unspecified` or `MaterialTheme.colorScheme.*` |
