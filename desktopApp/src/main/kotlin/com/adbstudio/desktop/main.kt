@@ -37,8 +37,9 @@ import com.adbstudio.desktop.feature.lifecycle.presentation.LifecycleViewModel
 import com.adbstudio.desktop.feature.media.presentation.MediaViewModel
 import com.adbstudio.desktop.feature.messages.presentation.MessagesViewModel
 import com.adbstudio.desktop.feature.notification.presentation.NotificationViewModel
+import com.adbstudio.desktop.feature.processes.presentation.ProcessesViewModel
 import com.adbstudio.desktop.feature.systemdetails.presentation.SystemDetailsViewModel
-import com.adbstudio.desktop.navigation.Screen
+import com.adbstudio.desktop.navigation.ScreenPage
 import com.adbstudio.desktop.theme.ThemeMode
 import com.adbstudio.desktop.ui.component.ErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,7 +86,7 @@ fun main() {
             },
         ) {
             var themeMode by remember { mutableStateOf(ThemeMode.System) }
-            var navigationItem by remember { mutableStateOf<Screen>(Screen.Apps) }
+            var navigationItem by remember { mutableStateOf<ScreenPage>(ScreenPage.Apps) }
             val appScope = rememberCoroutineScope()
             val commanderRegistry = koinInject<CommanderRegistry>()
             val deviceRepository = koinInject<DeviceRepository>()
@@ -101,6 +102,7 @@ fun main() {
             val notificationViewModel = koinInject<NotificationViewModel>()
             val systemDetailsViewModel = koinInject<SystemDetailsViewModel>()
             val uiInspectorViewModel = koinInject<UiInspectorViewModel>()
+            val processesViewModel = koinInject<ProcessesViewModel>()
 
             DisposableEffect(Unit) {
                 deviceRepository.start(appScope)
@@ -118,16 +120,34 @@ fun main() {
                     notificationViewModel.close()
                     systemDetailsViewModel.close()
                     uiInspectorViewModel.close()
+                    processesViewModel.close()
                 }
             }
 
             LaunchedEffect(Unit) {
-                Screen.entries.forEach { item ->
+                listOf(
+                    ScreenPage.Devices to "Devices",
+                    ScreenPage.Apps to "Apps",
+                    ScreenPage.Battery to "Battery",
+                    ScreenPage.DebugInfo to "Debug Info",
+                    ScreenPage.Settings to "Settings",
+                    ScreenPage.UiInspector to "UI Inspector",
+                    ScreenPage.Calendar to "Calendar",
+                    ScreenPage.Contacts to "Contacts",
+                    ScreenPage.Media to "Media",
+                    ScreenPage.Messages to "Messages",
+                    ScreenPage.Notifications to "Notifications",
+                    ScreenPage.Lifecycle to "Lifecycle",
+                    ScreenPage.DeviceSettings to "Device Settings",
+                    ScreenPage.DeviceProperties to "Device Properties",
+                    ScreenPage.SystemDetails to "System Details",
+                    ScreenPage.Processes to "Processes",
+                ).forEach { (screen, label) ->
                     commanderRegistry.register(
                         CommanderAction(
-                            label = item.displayName,
-                            category = item.category,
-                            action = { navigationItem = item },
+                            label = label,
+                            category = "Navigation",
+                            action = { navigationItem = screen },
                         ),
                     )
                 }
@@ -193,6 +213,7 @@ fun main() {
                         notificationViewModel = notificationViewModel,
                         systemDetailsViewModel = systemDetailsViewModel,
                         uiInspectorViewModel = uiInspectorViewModel,
+                        processesViewModel = processesViewModel,
                     )
                 }
 
@@ -209,25 +230,26 @@ fun main() {
 
 @Composable
 private fun MenuBarScope.NavigationMenu(
-    current: Screen,
-    onSelect: (Screen) -> Unit,
+    current: ScreenPage,
+    onSelect: (ScreenPage) -> Unit,
 ) {
     Menu("Navigation") {
-        Item("Devices") { onSelect(Screen.Devices) }
-        Item("Apps") { onSelect(Screen.Apps) }
-        Item("Battery") { onSelect(Screen.Battery) }
-        Item("Calendar") { onSelect(Screen.Calendar) }
-        Item("Contacts") { onSelect(Screen.Contacts) }
-        Item("Media") { onSelect(Screen.Media) }
-        Item("Messages") { onSelect(Screen.Messages) }
-        Item("Notifications") { onSelect(Screen.Notifications) }
-        Item("Lifecycle") { onSelect(Screen.Lifecycle) }
-        Item("Device Settings") { onSelect(Screen.DeviceSettings) }
-        Item("Device Properties") { onSelect(Screen.DeviceProperties) }
-        Item("System Details") { onSelect(Screen.SystemDetails) }
-        Item("Debug Info") { onSelect(Screen.DebugInfo) }
-        Item("Settings") { onSelect(Screen.Settings) }
-        Item("UI Inspector") { onSelect(Screen.UiInspector) }
+        Item("Devices") { onSelect(ScreenPage.Devices) }
+        Item("Apps") { onSelect(ScreenPage.Apps) }
+        Item("Battery") { onSelect(ScreenPage.Battery) }
+        Item("Calendar") { onSelect(ScreenPage.Calendar) }
+        Item("Contacts") { onSelect(ScreenPage.Contacts) }
+        Item("Media") { onSelect(ScreenPage.Media) }
+        Item("Messages") { onSelect(ScreenPage.Messages) }
+        Item("Notifications") { onSelect(ScreenPage.Notifications) }
+        Item("Lifecycle") { onSelect(ScreenPage.Lifecycle) }
+        Item("Device Settings") { onSelect(ScreenPage.DeviceSettings) }
+        Item("Device Properties") { onSelect(ScreenPage.DeviceProperties) }
+        Item("System Details") { onSelect(ScreenPage.SystemDetails) }
+        Item("Debug Info") { onSelect(ScreenPage.DebugInfo) }
+        Item("Settings") { onSelect(ScreenPage.Settings) }
+        Item("UI Inspector") { onSelect(ScreenPage.UiInspector) }
+        Item("Processes") { onSelect(ScreenPage.Processes) }
     }
 }
 

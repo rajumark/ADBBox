@@ -21,6 +21,7 @@ import com.adbstudio.desktop.feature.devicesettings.presentation.DeviceSettingsV
 import com.adbstudio.desktop.feature.deviceproperties.presentation.DevicePropertiesViewModel
 import com.adbstudio.desktop.feature.notification.presentation.NotificationViewModel
 import com.adbstudio.desktop.feature.settings.presentation.SettingsViewModel
+import com.adbstudio.desktop.feature.processes.presentation.ProcessesViewModel
 import com.adbstudio.desktop.feature.systemdetails.presentation.SystemDetailsViewModel
 import org.koin.dsl.module
 
@@ -92,6 +93,10 @@ val systemDetailsModule = module {
     single { SystemDetailsViewModel(get(), get()) }
 }
 
+val processesModule = module {
+    single { ProcessesViewModel(get(), get()) }
+}
+
 val appModules = listOf(
     coreModule,
     adbModule,
@@ -109,4 +114,5 @@ val appModules = listOf(
     deviceSettingsModule,
     devicePropertiesModule,
     systemDetailsModule,
+    processesModule,
 )

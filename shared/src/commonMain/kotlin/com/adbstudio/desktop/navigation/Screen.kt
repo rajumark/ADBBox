@@ -14,32 +14,26 @@ interface AppScreen
  * State-driven navigation — no 3rd-party nav libs.
  * Back stack stored as List<AppScreen> in NavigationViewModel.
  */
-sealed class Screen(
+sealed class ScreenPage(
     val displayName: String,
     val category: String = "Navigation",
 ) : AppScreen {
-    data object Devices : Screen("Devices")
-    data object Apps : Screen("Apps")
-    data object Battery : Screen("Battery")
-    data object DebugInfo : Screen("Debug Info")
-    data object Settings : Screen("Settings")
-    data object UiInspector : Screen("UI Inspector")
-    data object Calendar : Screen("Calendar")
-    data object Contacts : Screen("Contacts")
-    data object Media : Screen("Media")
-    data object Messages : Screen("Messages")
-    data object Notifications : Screen("Notifications")
-    data object Lifecycle : Screen("Lifecycle")
-    data object DeviceSettings : Screen("Device Settings")
-    data object DeviceProperties : Screen("Device Properties")
-    data object SystemDetails : Screen("System Details")
+    object Devices : ScreenPage("Devices")
+    object Apps : ScreenPage("Apps")
+    object Battery : ScreenPage("Battery")
+    object DebugInfo : ScreenPage("Debug Info")
+    object Settings : ScreenPage("Settings")
+    object UiInspector : ScreenPage("UI Inspector")
+    object Calendar : ScreenPage("Calendar")
+    object Contacts : ScreenPage("Contacts")
+    object Media : ScreenPage("Media")
+    object Messages : ScreenPage("Messages")
+    object Notifications : ScreenPage("Notifications")
+    object Lifecycle : ScreenPage("Lifecycle")
+    object DeviceSettings : ScreenPage("Device Settings")
+    object DeviceProperties : ScreenPage("Device Properties")
+    object SystemDetails : ScreenPage("System Details")
+    object Processes : ScreenPage("Processes")
 
-    companion object {
-        /** All available screens for command palette registration. */
-        val entries: List<Screen> = listOf(
-            Devices, Apps, Battery, DebugInfo, Settings, UiInspector,
-            Calendar, Contacts, Media, Messages, Notifications, Lifecycle,
-            DeviceSettings, DeviceProperties, SystemDetails,
-        )
-    }
+    companion object
 }
